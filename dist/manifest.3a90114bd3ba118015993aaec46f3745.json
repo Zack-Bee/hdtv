@@ -1,7 +1,0 @@
-{
-  "name": "hdtv neu",
-  "short_name": "hdtv",
-  "orientation": "portrait",
-  "display": "standalone",
-  "start_url": "."
-}
