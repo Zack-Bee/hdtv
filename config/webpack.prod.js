@@ -15,7 +15,15 @@ const config = merge(common, {
             loader: "babel-loader",
             include: path.resolve(__dirname, "../src"),
             options: {
-                presets: ["react", "env"]
+                presets: [
+                    ["react"],
+                    ["env", {
+                        "targets": [
+                            "safari >= 9",
+                            "ie >= 10"
+                        ]
+                    }]
+                ]
             },
             exclude: path.resolve("node_modules")
         }]
