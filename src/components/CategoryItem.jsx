@@ -55,7 +55,6 @@ class CategoryItem extends React.Component {
                 root: this.props.classes.icon
             } : {}} />
         }
-        console.log(this.props.isActive)
         return (
             <NavLink to={`/list/channel/${this.props.name}`}>
                 <ListItem button onClick={() => {

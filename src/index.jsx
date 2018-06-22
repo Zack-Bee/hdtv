@@ -10,6 +10,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import { withStyles } from '@material-ui/core/styles'
 import "./reset.css"
 import ListPage from "./pages/ListPage.jsx"
+import PlayerPage from "./pages/PlayerPage.jsx"
 
 const App = () => (
     <React.Fragment>
@@ -17,6 +18,9 @@ const App = () => (
         <Switch>
             <Route path="/list/channel/:category" render={({ match }) => (
                 <ListPage category={match.params.category} />
+            )} />
+            <Route path="/player/live/:channel" render={(some) => (
+                <PlayerPage match={some} />
             )} />
             <Route path="/">
                 <Redirect to="/list/channel/所有频道" />

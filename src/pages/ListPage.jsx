@@ -11,9 +11,12 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ViewModule from "@material-ui/icons/ViewModule"
+import ViewHeadline from "@material-ui/icons/ViewHeadline"
 import blue from "@material-ui/core/colors/blue"
 import IconInput from "../components/IconInput.jsx"
 import CategoryItem from "../components/CategoryItem.jsx"
+import ChannelList from "../components/ChannelList.jsx"
 
 const drawerWidth = 240
 
@@ -96,7 +99,9 @@ const styles = (theme) => ({
     content: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        padding: theme.spacing.unit * 3,
+        padding: `32px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+        overflowY: "scroll",
+        marginTop: 56
     },
 })
 
@@ -106,11 +111,13 @@ class MiniDrawer extends React.Component {
         this.state = {
             open: false,
             category: this.props.category,
-            search: ""
+            search: "",
+            isHidePicture: false
         }
         this.closeDrawer = this.closeDrawer.bind(this)
         this.openDrawer = this.openDrawer.bind(this)
         this.setCategory = this.setCategory.bind(this)
+        this.setIsHidePicture = this.setIsHidePicture.bind(this)
     }
 
     openDrawer() {
@@ -123,6 +130,10 @@ class MiniDrawer extends React.Component {
 
     setCategory(category) {
         this.setState({ category })
+    }
+
+    setIsHidePicture(isHidePicture) {
+        this.setState({ isHidePicture })
     }
 
     render() {
@@ -150,6 +161,14 @@ class MiniDrawer extends React.Component {
                         </Typography>
                         <div style={{ flex: "1 1 auto" }}></div>
                         <IconInput />
+                        <div style={{margin: "0 20px 0 10px"}}>
+                            <IconButton onClick={() => 
+                                {this.setIsHidePicture(!this.state.isHidePicture)
+                            }}>
+                                {this.state.isHidePicture ?
+                                    <ViewHeadline /> : <ViewModule />}
+                            </IconButton>
+                        </div>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -182,14 +201,16 @@ class MiniDrawer extends React.Component {
                     <Divider />
                     <List>
                         <CategoryItem key="6" categoryId="6" name="最近观看"
-                            isActive={this.state.category === "最近观看"}/>
+                            isActive={this.state.category === "最近观看"} />
                         <CategoryItem key="7" categoryId="7" name="我的收藏"
                             isActive={this.state.category === "我的收藏"} />
                     </List>
                 </Drawer>
                 <main className={classes.content}>
-                    <div className={classes.toolbar} />
-                    <Typography noWrap>{'You think water moves fast? You should see ice.'}</Typography>
+                    <div className={classes.toolbar} style={{ height: 0, minHeight: 0 }} />
+                    <div>
+                        <ChannelList isHidePicture={this.state.isHidePicture} />
+                    </div>
                 </main>
             </div>
         )

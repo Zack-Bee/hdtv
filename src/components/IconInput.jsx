@@ -9,7 +9,7 @@ class SearchInput extends React.Component {
                 display: "flex",
                 backgroundColor: blue[400],
                 padding: "4px 8px",
-                marginRight: "30px"
+                borderRadius: "5px"
             }}>
                 <Search />
                 <input onFocus={this.bigger} onBlur={this.smaller} style={{
@@ -21,7 +21,7 @@ class SearchInput extends React.Component {
                     outline: "none",
                     width: this.state.width,
                     transition: "width 0.5s"
-                }} onChange={this.showResult}/>
+                }} onChange={this.showResult} autoComplete="off"/>
             </div>
         )
     }
