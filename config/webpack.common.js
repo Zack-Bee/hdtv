@@ -8,11 +8,11 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "../src/index.html")
+            template: path.resolve(__dirname, "../src/index.html"),
         }),
         new WebpackPwaManifest({
-            name: "hdtv neu",
-            short_name: "hdtv",
+            name: "东北大学HDTV",
+            short_name: "HDTV",
             publicPath: '/',
             start_url: "./"
         }),

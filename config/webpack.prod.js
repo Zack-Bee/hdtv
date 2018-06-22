@@ -6,7 +6,8 @@ const CleanWebpackPlugin = require("clean-webpack-plugin")
 const config = merge(common, {
     output: {
         filename: "[name].[chunkhash].js",
-        path: path.resolve(__dirname, "../dist")
+        path: path.resolve(__dirname, "../dist"),
+        publicPath: "/"
     },
     mode: "production",
     module: {
@@ -20,7 +21,7 @@ const config = merge(common, {
                     ["env", {
                         "targets": [
                             "safari >= 9",
-                            "ie >= 10"
+                            "ie >= 11"
                         ]
                     }]
                 ]
