@@ -6,7 +6,7 @@
 response:
 [
     {
-        name: "所有",  //分类的名字
+        name: "所有频道",  //分类的名字
         categoryId: 0, // 分类的id, 决定了显示在页面列表中的顺序
         // 该分类下的频道列表
         channelList: [
@@ -51,6 +51,54 @@ response:
     {
         name: "校内直播", // 校内活动的直播等等
         categoryId: 5
+    }
+]
+```
+
+
+### Path: /review/:channelName
+#### Method: get
+#### Usage: 获取指定频道名字的回看列表
+```
+path示例
+/review/CCTV-1
+
+response:
+[
+    {
+        data: "7月16日",
+        list: [
+            {
+                title: "新闻联播",
+                startTime: "19:00",
+                endTime: "19:30",
+                sourceList: [
+                    {
+                        name: "东北大学",
+                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
+                    },
+                    {
+                        name: "吉大",
+                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
+                    }
+                ]
+            },
+            {
+                title: "天气预报",
+                startTime: "19:30",
+                endTime: "19:40",
+                sourceList: [
+                    {
+                        name: "东北大学",
+                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
+                    },
+                    {
+                        name: "吉大",
+                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
+                    }
+                ]
+            }
+        ]
     }
 ]
 ```
