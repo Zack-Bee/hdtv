@@ -16,17 +16,20 @@ const config = {
             publicPath: '/',
             start_url: "./"
         }),
-        
+
     ],
     module: {
         rules: [{
-            test: /\.css/,
-            use: [
-                "style-loader",
-                "css-loader"
-            ],
-            include: path.resolve(__dirname, "../src"),
-            exclude: path.resolve(__dirname, "../node_modules")
+            test: /\.css$/,
+            loader: "style-loader!css-loader",
+            // include: path.resolve(__dirname, "../src"),
+            // exclude: path.resolve(__dirname, "../node_modules")
+        }, {
+            test: /\.(png|jpg|gif|svg|woff2|ttf|woff|eot|swf)$/,
+            loader: 'file-loader',
+            options: {
+                name: '[name].[hash].[ext]',
+            }
         }]
     }
 }

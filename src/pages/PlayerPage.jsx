@@ -1,13 +1,19 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import React from 'react'
+import { withStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
 import blue from "@material-ui/core/colors/blue"
+import Hls from 'hls.js'
+import flowplayer from 'flowplayer'
+import jQuery from 'jquery'
+import swf from 'flowplayer/dist/flowplayer.swf'
+import swfHls from 'flowplayer/dist/flowplayerhls.swf'
 
+window.Hls = Hls
 
 const styles = {
     root: {
@@ -42,7 +48,7 @@ function ButtonAppBar(props) {
                 </Toolbar>
             </AppBar>
         </div>
-    );
+    )
 }
 
 export default withStyles(styles)(ButtonAppBar)

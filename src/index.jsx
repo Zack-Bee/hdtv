@@ -9,6 +9,7 @@ import {
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { withStyles } from '@material-ui/core/styles'
 import "./reset.css"
+import 'typeface-roboto'
 import ListPage from "./pages/ListPage.jsx"
 import PlayerPage from "./pages/PlayerPage.jsx"
 

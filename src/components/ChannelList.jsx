@@ -20,7 +20,7 @@ const styles = {
         padding: "8px!important"
     },
     icon: {
-        fontSize: "18px"
+        fontSize: "16px"
     }
 }
 
@@ -78,10 +78,10 @@ const ChannelItem = (props) => {
                             <div>{props.name}</div>
                             <div style={{
                                 display: "flex",
-                                lineHeight: "18px",
-                                fontSize: "18px",
+                                lineHeight: "16px",
+                                fontSize: "16px",
                                 color: grey[500],
-                                height: "18px"
+                                height: "16px"
                             }}>
                                 <PeopleIcon classes={{ root: classes.icon }} />
                                 <span>11</span>
