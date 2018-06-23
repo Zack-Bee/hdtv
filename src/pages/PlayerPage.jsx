@@ -12,12 +12,13 @@ import flowplayer from 'flowplayer'
 import jQuery from 'jquery'
 import swf from 'flowplayer/dist/flowplayer.swf'
 import swfHls from 'flowplayer/dist/flowplayerhls.swf'
-
-window.Hls = Hls
+import Player from "../components/Player.jsx"
 
 const styles = {
     root: {
         flexGrow: 1,
+        height: "100vh",
+        overflow: "hidden"
     },
     flex: {
         flex: 1,
@@ -47,6 +48,7 @@ function ButtonAppBar(props) {
                     <Button color="inherit">节目列表</Button>
                 </Toolbar>
             </AppBar>
+            <Player/>
         </div>
     )
 }
