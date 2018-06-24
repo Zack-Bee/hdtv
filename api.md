@@ -91,16 +91,19 @@ response:
 // path: /sources/cctv1
 
 response:
-[
-    {
-        name: "清华视频源",
-        path: "https://path/to/your.m3u8"
-    },
-    {
-        name: "北邮视频源",
-        path: "https://path/to/your.m3u8"
-    }
-]
+{   
+    title: "CCTV-1", // 频道名称
+    sourceList: [
+        {
+            name: "清华视频源",
+            path: "https://path/to/your.m3u8"
+        },
+        {
+            name: "北邮视频源",
+            path: "https://path/to/your.m3u8"
+        }
+    ]
+}
 
 
 // 回看节目播放源示例
@@ -108,14 +111,17 @@ response:
 
 response:
 response:
-[
-    {
-        name: "清华视频源",
-        path: "https://path/to/your.m3u8"
-    },
-    {
-        name: "北邮视频源",
-        path: "https://path/to/your.m3u8"
-    }
-]
+{
+    title: "新闻联播", // 节目名称
+    sourceList: [
+        {
+            name: "清华视频源",
+            path: "https://path/to/your.m3u8"
+        },
+        {
+            name: "北邮视频源",
+            path: "https://path/to/your.m3u8"
+        }
+    ]
+}
 ```
