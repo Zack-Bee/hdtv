@@ -20,7 +20,7 @@ const App = () => (
             <Route path="/list/channel/:category" render={({ match }) => (
                 <ListPage category={match.params.category} />
             )} />
-            <Route path="/player/live/:channel" render={(some) => (
+            <Route path="/player/:channel/:video*" render={(some) => (
                 <PlayerPage match={some} />
             )} />
             <Route path="/">

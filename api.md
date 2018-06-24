@@ -1,7 +1,9 @@
 ### Path: /channels
 #### Method: get
-#### Usage: 获取分类与频道列表
+#### Usage: 获取分类与频道列表, 用于列表页显示
 ```
+// snapshot的地址默认为/snapshot/:channalId?timeStamp
+// 示例: /snapshot/cctv1?12345678
 
 response:
 [
@@ -12,23 +14,10 @@ response:
         channelList: [
             {
                 name: "CCTV-1", // 频道的名字
-                snapshotUrl: "someUrl", // 频道当前时刻的snapshot
-                channelId: 0, // 频道的id
+                channelId: "cctv1", // 频道的id
                 title: "新闻联播", // 当前时刻频道的节目名称
                 viewerNum: 10, // 该频道观众的人数
-                keyWord: "", // 节目搜索的关键词
-
-                // 节目源的列表
-                sourceList: [
-                    {
-                        name: "测试",
-                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                    },
-                    {
-                        name: "吉大",
-                        path: "https://media2.neu6.edu.cn/hls/hls27.m3u8"
-                    }
-                ]
+                keyWord: "", // (可选)节目搜索的关键词, 如果没有则默认是title + name
             }
         ]
     },
@@ -56,50 +45,77 @@ response:
 ```
 
 
-### Path: /review/:channelName
+### Path: /list/:channelId
 #### Method: get
-#### Usage: 获取指定频道名字的回看列表
+#### Usage: 获取指定频道id的节目清单, 用于播放器页面显示节目清单
 ```
 path示例
-/review/CCTV-1
+/list/cctv1
 
 response:
 [
     {
-        data: "7月16日",
+        date: "7月16日",
         list: [
             {
                 title: "新闻联播",
-                startTime: "19:00",
-                endTime: "19:30",
-                sourceList: [
-                    {
-                        name: "东北大学",
-                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                    },
-                    {
-                        name: "吉大",
-                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                    }
-                ]
+                timeline: "1529424360-1529426160"
             },
             {
                 title: "天气预报",
-                startTime: "19:30",
-                endTime: "19:40",
-                sourceList: [
-                    {
-                        name: "东北大学",
-                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                    },
-                    {
-                        name: "吉大",
-                        path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                    }
-                ]
+                timeline: "1529477777-1529488888"
+            }
+        ]
+    },
+    {
+        date: "7月17日",
+        list: [
+            {
+                title: "新闻联播",
+                timeline: "1529424360-1529426160"
+            },
+            {
+                title: "天气预报",
+                timeline: "1529477777-1529488888"
             }
         ]
     }
 ]
 ```
 
+### Path: /sources/:channelId/:timeline*
+#### Method: get
+#### Usage: 获取指定频道, (指定timeline)的播放源, 如果没有timeline则表明是获取该频道直播的播放源, 有timeline则表明是获取该频道某个节目回看的播放源
+```
+// 直播播放源示例
+// path: /sources/cctv1
+
+response:
+[
+    {
+        name: "清华视频源",
+        path: "https://path/to/your.m3u8"
+    },
+    {
+        name: "北邮视频源",
+        path: "https://path/to/your.m3u8"
+    }
+]
+
+
+// 回看节目播放源示例
+// path: /sources/cctv1/1529424360-1529426160
+
+response:
+response:
+[
+    {
+        name: "清华视频源",
+        path: "https://path/to/your.m3u8"
+    },
+    {
+        name: "北邮视频源",
+        path: "https://path/to/your.m3u8"
+    }
+]
+```
