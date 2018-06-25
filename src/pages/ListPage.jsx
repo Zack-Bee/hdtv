@@ -14,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ViewModule from "@material-ui/icons/ViewModule"
 import ViewHeadline from "@material-ui/icons/ViewHeadline"
 import blue from "@material-ui/core/colors/blue"
-import IconInput from "../components/IconInput.jsx"
+import SearchInput from "../components/SearchInput.jsx"
 import CategoryItem from "../components/CategoryItem.jsx"
 import ChannelList from "../components/ChannelList.jsx"
 
@@ -28,24 +28,6 @@ const styles = (theme) => ({
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
-        currentChannelList: [{
-            name: "CCTV-1",
-            snapshotUrl: "someUrl",
-            channelId: 0,
-            title: "新闻联播",
-            viewerNum: 10,
-            keyWord: "",
-            sourceList: [
-                {
-                    name: "测试",
-                    path: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-                },
-                {
-                    name: "吉大",
-                    path: "https://media2.neu6.edu.cn/hls/hls27.m3u8"
-                }
-            ]
-        }]
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -100,9 +82,9 @@ const styles = (theme) => ({
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
         padding: `32px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
-        overflowY: "scroll",
+        overflowY: "auto",
         marginTop: 56
-    },
+    }
 })
 
 class MiniDrawer extends React.Component {
@@ -112,12 +94,52 @@ class MiniDrawer extends React.Component {
             open: false,
             category: this.props.category,
             search: "",
-            isHidePicture: false
+            isHidePicture: false,
+            currentChannelList: [{
+                name: "CCTV-1",
+                channelId: "cctv1hd",
+                title: "新闻联播",
+                viewerNum: 10,
+                keyWord: "CCTV-1 新闻联播",
+            }, {
+                name: "CCTV-2",
+                channelId: "cctv2hd",
+                title: "新闻联播",
+                viewerNum: 20,
+                keyWord: "CCTV-2 新闻联播"
+            }, {
+                name: "CCTV-3",
+                channelId: "cctv3hd",
+                title: "天气预报",
+                viewerNum: 20,
+                keyWord: "CCTV-3 天气预报"
+            }, {
+                name: "CCTV-3",
+                channelId: "cctv4hd",
+                title: "天气预报",
+                viewerNum: 20,
+                keyWord: "CCTV-3 天气预报"
+            }, {
+                name: "CCTV-3",
+                channelId: "cctv5hd",
+                title: "天气预报",
+                viewerNum: 20,
+                keyWord: "CCTV-3 天气预报"
+            }, {
+                name: "CCTV-3",
+                channelId: "cctv6hd",
+                title: "天气预报",
+                viewerNum: 20,
+                keyWord: "CCTV-3 天气预报"
+            }],
+            timestamp: Date.now(),
+            filter: ""
         }
         this.closeDrawer = this.closeDrawer.bind(this)
         this.openDrawer = this.openDrawer.bind(this)
         this.setCategory = this.setCategory.bind(this)
         this.setIsHidePicture = this.setIsHidePicture.bind(this)
+        this.setFilter = this.setFilter.bind(this)
     }
 
     openDrawer() {
@@ -134,6 +156,10 @@ class MiniDrawer extends React.Component {
 
     setIsHidePicture(isHidePicture) {
         this.setState({ isHidePicture })
+    }
+
+    setFilter(filter) {
+        this.setState({filter})
     }
 
     render() {
@@ -160,7 +186,9 @@ class MiniDrawer extends React.Component {
                             {this.props.category}
                         </Typography>
                         <div style={{ flex: "1 1 auto" }}></div>
-                        <IconInput />
+                        <SearchInput className={classes.input} 
+                            channelList={this.state.currentChannelList}
+                            setFilter={this.setFilter}/>
                         <div style={{margin: "0 20px 0 10px"}}>
                             <IconButton onClick={() => 
                                 {this.setIsHidePicture(!this.state.isHidePicture)
@@ -209,7 +237,10 @@ class MiniDrawer extends React.Component {
                 <main className={classes.content}>
                     <div className={classes.toolbar} style={{ height: 0, minHeight: 0 }} />
                     <div>
-                        <ChannelList isHidePicture={this.state.isHidePicture} />
+                        <ChannelList isHidePicture={this.state.isHidePicture}
+                            channelList={this.state.currentChannelList}
+                            cacheNum={this.state.timestamp} 
+                            filter={this.state.filter}/>
                     </div>
                 </main>
             </div>

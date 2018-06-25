@@ -1,16 +1,24 @@
 import React from 'react'
 import Search from '@material-ui/icons/Search'
 import blue from "@material-ui/core/colors/blue"
+import { withStyles } from '@material-ui/core/styles'
+
+const styles = (theme) => ({
+    root: {
+        [theme.breakpoints.only("xs")]: {
+            display: "none"
+        },
+        display: "flex",
+        backgroundColor: blue[400],
+        padding: "4px 8px",
+        borderRadius: "5px"
+    }
+})
 
 class SearchInput extends React.Component {
     render() {
         return (
-            <div style={{
-                display: "flex",
-                backgroundColor: blue[400],
-                padding: "4px 8px",
-                borderRadius: "5px"
-            }}>
+            <div className={this.props.classes.root}>
                 <Search />
                 <input onFocus={this.bigger} onBlur={this.smaller} style={{
                     color: "#fff",
@@ -21,7 +29,7 @@ class SearchInput extends React.Component {
                     outline: "none",
                     width: this.state.width,
                     transition: "width 0.5s"
-                }} onChange={this.showResult} autoComplete="off"/>
+                }} onChange={this.showResult} autoComplete="off" />
             </div>
         )
     }
@@ -33,17 +41,18 @@ class SearchInput extends React.Component {
         }
         this.smaller = this.smaller.bind(this)
         this.bigger = this.bigger.bind(this)
+        this.showResult = this.showResult.bind(this)
     }
     smaller() {
-        this.setState({width: "100px"})
+        this.setState({ width: "100px" })
     }
     bigger() {
-        this.setState({width: "150px"})
+        this.setState({ width: "150px" })
     }
     showResult(event) {
         let search = event.currentTarget.value,
             channelList = this.props.channelList
-        this.props.setSearch(search)
+        this.props.setFilter(search.trim())
         channelList.filter((channel) => (
             `${channel.name} ${channel.title} ${channel.keyWord}`.
                 includes(search)
@@ -51,4 +60,4 @@ class SearchInput extends React.Component {
     }
 }
 
-export default SearchInput
+export default withStyles(styles)(SearchInput)

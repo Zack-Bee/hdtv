@@ -20,8 +20,8 @@ const App = () => (
             <Route path="/list/channel/:category" render={({ match }) => (
                 <ListPage category={match.params.category} />
             )} />
-            <Route path="/player/:channel/:video*" render={(some) => (
-                <PlayerPage match={some} />
+            <Route path="/player/:channel/:video*" render={({match}) => (
+                <PlayerPage match={match} />
             )} />
             <Route path="/">
                 <Redirect to="/list/channel/所有频道" />

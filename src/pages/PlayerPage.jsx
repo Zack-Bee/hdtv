@@ -3,12 +3,14 @@ import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import { Link } from "react-router-dom"
 import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
 import blue from "@material-ui/core/colors/blue"
 import HomeIcon from "@material-ui/icons/Home"
 import Player from "../components/Player.jsx"
+import VideoListButton from "../components/VideoListButton.jsx"
+import FavoriteButton from "../components/FavoriteButton.jsx"
 
 const styles = {
     root: {
@@ -37,15 +39,18 @@ class PlayerPage extends React.Component {
                 <AppBar position="static" classes={{ root: classes.appBar }}>
                     <Toolbar>
                         <Tooltip title="返回频道列表">
-                            <IconButton className={classes.menuButton}
-                                color="inherit" aria-label="Home">
-                                <HomeIcon />
-                            </IconButton>
+                            <Link to="/list/channel/所有频道">
+                                <IconButton className={classes.menuButton}
+                                    color="inherit" aria-label="Home">
+                                    <HomeIcon />
+                                </IconButton>
+                            </Link>
                         </Tooltip>
                         <Typography variant="title" color="inherit" className={classes.flex}>
                             {this.state.title}
                         </Typography>
-                        <Button color="inherit">节目列表</Button>
+                        <FavoriteButton channel={match.params.channel}/>
+                        <VideoListButton color="inherit" />
                     </Toolbar>
                 </AppBar>
                 <Player />

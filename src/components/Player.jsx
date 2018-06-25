@@ -24,14 +24,40 @@ const styles = (theme) => ({
     }
 })
 
+const loadNewVideo = (container, isLive, src) => (
+    flowplayer(container, {
+        share: false,
+        autoplay: true,
+        clip: {
+            sources: [{
+                type: "application/x-mpegurl",
+                src
+            }]
+        },
+        live: isLive,
+        keyboard: false,
+        chromecast: false,
+        swf,
+        swfHls,
+        hlsjs: {
+            xhrSetup: (xhr) => {
+                xhr.withCredentials = false
+            },
+        }
+    })
+)
+
 const isPc = (() => {
-    var userAgentInfo = navigator.userAgent;
+    var userAgentInfo = navigator.userAgent
     var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod");
-    var flag = true;
+    var flag = true
     for (var v = 0; v < Agents.length; v++) {
-        if (userAgentInfo.indexOf(Agents[v]) > 0) { flag = false; break; }
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false
+            break
+        }
     }
-    return flag;
+    return flag
 })()
 
 class Player extends React.Component {
@@ -62,54 +88,9 @@ class Player extends React.Component {
     }
 
     componentDidMount() {
-        let clip = {
-            sources: [{
-                type: "application/x-mpegurl",
-                src: "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8"
-            }]
-        }
-        this.player = flowplayer(this.playerNode, {
-            share: false,
-            autoplay: true,
-            clip,
-            live: true,
-            keyboard: false,
-            chromecast: false,
-            swf,
-            swfHls,
-            hlsjs: {
-                xhrSetup: (xhr) => {
-                    xhr.withCredentials = false
-                },
-            }
-        })
+        this.player = loadNewVideo(this.playerNode, true,
+            "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8")
         console.log(this.player.engine)
-        console.log(this.player.shutdown.toString())
-        setTimeout(() => {
-            this.player.disable()
-            this.player.shutdown()
-            console.log("has shutdown")
-            this.player = flowplayer(this.playerNode, {
-                share: false,
-                autoplay: true,
-                clip: {
-                    sources: [{
-                        type: "application/x-mpegurl",
-                        src: "https://media2.neu6.edu.cn/review/program-1529424360-1529426160-hls27.m3u8"
-                    }]
-                },
-                live: false,
-                keyboard: false,
-                chromecast: false,
-                swf,
-                swfHls,
-                hlsjs: {
-                    xhrSetup: (xhr) => {
-                        xhr.withCredentials = false
-                    },
-                }
-            })
-        }, 5000)
     }
 
     componentWillUnmount() {
@@ -120,10 +101,6 @@ class Player extends React.Component {
         }
 
         this.player.shutdown()
-
-        let video = this.playerNode.querySelector(".fp-player > video")
-        video.src = ""
-        video.load()
     }
 }
 
