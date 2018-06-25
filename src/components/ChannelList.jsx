@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid'
 import PeopleIcon from "@material-ui/icons/People"
 import grey from "@material-ui/core/colors/grey"
 import Collapse from '@material-ui/core/Collapse'
-import { Transition, TransitionGroup } from 'react-transition-group'
+import { Transition } from 'react-transition-group'
 import config from "../../config/config"
 import { Link } from 'react-router-dom'
 
@@ -44,12 +44,10 @@ const styles = {
 
 const ChannelItem = (props) => {
     const { classes } = props
-    console.log("render")
-    console.log(classes)
+    console.log("ChannelItem render")
     return (
         <Transition in={props.isShow} unmountOnExit timeout={300}>
             {(state) => (
-                console.log(state) ||
                 <Grid item xs={12} sm={6} md={4} lg={3} classes={{ item: `${classes.default} ${classes[state]}` }}>
                     <Link to={`/player/${props.channelId}`}>
                         <div className="ChannelListWrapper">

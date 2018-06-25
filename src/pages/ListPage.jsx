@@ -246,8 +246,20 @@ class MiniDrawer extends React.Component {
             </div>
         )
     }
+
+    componentDidMount() {
+        this.timer = setInterval(() => {
+            console.log("change")
+            this.setState({
+                timestamp: Date.now()
+            })
+        }, 1000 * 60)
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer)
+    }
 }
 
 
-const ListPage = withStyles(styles, { withTheme: true })(MiniDrawer)
-export default ListPage
+export default withStyles(styles, { withTheme: true })(MiniDrawer)

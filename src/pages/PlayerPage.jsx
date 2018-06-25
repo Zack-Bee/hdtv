@@ -46,11 +46,14 @@ class PlayerPage extends React.Component {
                                 </IconButton>
                             </Link>
                         </Tooltip>
-                        <Typography variant="title" color="inherit" className={classes.flex}>
+                        <Typography variant="title" color="inherit" 
+                            className={classes.flex}
+                        >
                             {this.state.title}
                         </Typography>
                         <FavoriteButton channel={match.params.channel}/>
-                        <VideoListButton color="inherit" />
+                        <VideoListButton color="inherit" 
+                            channel={match.params.channel}/>
                     </Toolbar>
                 </AppBar>
                 <Player />
@@ -63,7 +66,6 @@ class PlayerPage extends React.Component {
         this.state = {
             title: "正在加载"
         }
-        console.log("constructor", props)
     }
 }
 

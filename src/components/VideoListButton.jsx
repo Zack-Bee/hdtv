@@ -2,15 +2,11 @@ import React from 'react'
 import Button from '@material-ui/core/Button'
 import Collapse from '@material-ui/core/Collapse'
 import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
 import { withStyles } from '@material-ui/core/styles'
-import {
-    Link
-} from 'react-router-dom'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import VideoList from "./VideoList.jsx"
 
-const styles = theme => ({
+const styles = (theme) => ({
     header: {
         width: "200px"
     },
@@ -32,11 +28,8 @@ const styles = theme => ({
         [theme.breakpoints.only("xs")]: {
             top: "56px"
         }
-    },
-    text: {
-        // fontSize: "18px"
     }
-});
+})
 
 class VideoListButton extends React.Component {
     render() {
@@ -54,72 +47,18 @@ class VideoListButton extends React.Component {
                     <div className={classes.list}>
                         <ClickAwayListener onClickAway={this.closeList}>
                             <List disablePadding className={classes.header}>
-                                <ListItem divider button onClick={() => { this.setOpenIndex(0) }}>
-                                    <ListItemText primary="7月15号" classes={{ primary: classes.text }} />
-                                </ListItem>
-                                <Collapse in={this.state.openIndex === 0} timeout="auto"
-                                    unmountOnExit>
-                                    <List component="div" disablePadding>
-                                        <Link to="/list/channel/所有频道">
-                                            <ListItem divider button className={classes.nested}>
-                                                <ListItemText primary="16:00 新闻联播真好看哈哈哈哈哈哈哈哈哈" classes={{ primary: classes.text }} />
-                                            </ListItem>
-                                        </Link>
-                                        <ListItem divider button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem divider button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem divider button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                    </List>
-                                </Collapse>
-                                <ListItem divider className={classes.header} button onClick={() => { this.setOpenIndex(1) }}>
-                                    <ListItemText primary="7月15号" classes={{ primary: classes.text }} />
-                                </ListItem>
-                                <Collapse in={this.state.openIndex === 1} timeout="auto"
-                                    unmountOnExit>
-                                    <List component="div" disablePadding>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                        <ListItem button className={classes.nested}>
-                                            <ListItemText primary="16:00 新闻联播" classes={{ primary: classes.text }} />
-                                        </ListItem>
-                                    </List>
-                                </Collapse>
+                                {
+                                    this.state.videoList.map((list, index) => (
+                                        <VideoList list={list} 
+                                            key={`${this.props.channel}-${
+                                                list.date}
+                                            `}
+                                            setOpenIndex={this.setOpenIndex}
+                                            channel={this.props.channel}
+                                            index={index} 
+                                            openIndex={this.state.openIndex}/>
+                                    ))
+                                }
                             </List>
                         </ClickAwayListener>
                     </div>
@@ -132,7 +71,35 @@ class VideoListButton extends React.Component {
         super(props)
         this.state = {
             isListShow: false,
-            openIndex: -1
+            openIndex: -1,
+            videoList: [
+                {
+                    date: "7月18日",
+                    list: [
+                        {
+                            title: "新闻联播",
+                            timeline: "7:30"
+                        },
+                        {
+                            title: "天气预报",
+                            timeline: "8:40"
+                        }
+                    ]
+                },
+                {
+                    date: "7月17日",
+                    list: [
+                        {
+                            title: "新闻联播",
+                            timeline: "4:10"
+                        },
+                        {
+                            title: "天气预报",
+                            timeline: "8:40"
+                        }
+                    ]
+                }
+            ]
         }
         this.openList = this.openList.bind(this)
         this.closeList = this.closeList.bind(this)
@@ -156,6 +123,9 @@ class VideoListButton extends React.Component {
         } else {
             this.setState({ openIndex: index })
         }
+    }
+    componentDidUpdate(prevProps, prevState) {
+        // console.log(prevProps, prevState)
     }
 }
 

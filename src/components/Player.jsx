@@ -68,7 +68,6 @@ class Player extends React.Component {
     }
 
     render() {
-        console.log(isPc)
         return (
             <React.Fragment>
                 <style>
@@ -82,7 +81,7 @@ class Player extends React.Component {
                     `}
                 </style>
                 <div id="player" ref={(ref) => { this.playerNode = ref }}
-                    className={`${this.props.classes.player} fp-slim no-volume`} />
+                    className={`${this.props.classes.player} fp-slim`} />
             </React.Fragment>
         )
     }
