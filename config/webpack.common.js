@@ -1,20 +1,48 @@
 const path = require("path")
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const config = require("./config")
 
-const config = {
+module.exports = {
     entry: {
         app: "./src/index.jsx",
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "../src/index.html"),
+            favicon: path.resolve(__dirname, "../src/icon/icon.png")
         }),
         new WebpackPwaManifest({
             name: "东北大学HDTV",
             short_name: "HDTV",
-            publicPath: '/',
-            start_url: "./"
+            start_url: "./",
+            description: "HDTV, 高清, 快速, 简洁",
+            background_color: "#fff",
+            dir: "ltr",
+            display: "standalone",
+            icons: [
+                {
+                    src: path.resolve("./src/icon/icon.png"),
+                    sizes: [36, 48, 72, 96, 128, 256],
+                    ios: true
+                },
+                {
+                    src: path.resolve("./src/icon/icon.png"),
+                    sizes: [36, 48, 72, 96, 128, 256],
+                    ios: "startup"
+                },
+                {
+                    src: path.resolve("./src/icon/icon.svg"),
+                    sizes: [36, 48, 72, 96, 128, 256],
+                    ios: true
+                }
+            ],
+            ios: {
+                "apple-mobile-web-app-title": "东北大学HDTV",
+                'apple-mobile-web-app-status-bar-style': 'black'
+            },
+            lang: "zh-CN",
+            theme_color: "#2196f3"
         }),
 
     ],
@@ -34,4 +62,3 @@ const config = {
     }
 }
 
-module.exports = config
