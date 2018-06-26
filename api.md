@@ -1,9 +1,8 @@
-### Path: /channels
+### Path: /:version/channels
 #### Method: get
 #### Usage: 获取分类与频道列表, 用于列表页显示
 ```
-// snapshot的地址默认为/snapshot/:channalId?timeStamp
-// 示例: /snapshot/cctv1?12345678
+示例path: /v1/channels
 
 response:
 [
@@ -15,15 +14,30 @@ response:
             {
                 name: "CCTV-1", // 频道的名字
                 channelId: "cctv1", // 频道的id
-                title: "新闻联播", // 当前时刻频道的节目名称
-                viewerNum: 10, // 该频道观众的人数
-                keyWord: "", // (可选)节目搜索的关键词, 如果没有则默认是title + name
+                snapshotUrl: "/snapshot/xxxx.png", // 节目snapshot的地址
+                keyWord: "", // (可选)节目搜索的关键词, 如果没有则默认是title + name,
+                videoList: [
+                    {
+                        time: 1529943420,
+                        title: "动物世界"
+                    },
+                    {
+                        time: 1529943420,
+                        title: "新闻联播"
+                    }
+                ],
+                canPlay: true // 是否当前有能够播放的视频源
             }
         ]
     },
     {
         name: "热门节目", // 收看人数最多的前十节目
         categoryId: 1,
+        channelList: [
+            {
+                channelId: "cctv1" // 除了所有频道, 其他的可以只给id, 由前端自己计算其他数据
+            }
+        ]
     },
     {
         name: "央视频道",
@@ -44,13 +58,29 @@ response:
 ]
 ```
 
+### Path: /:version/details
+#### Method: get
+#### Usage: 获取所有频道的观看人数
+```
+示例path: /v1/details
 
-### Path: /list/:channelId
+[
+    {
+        channelId: "cctv1",
+        viewNum: 10
+    },
+    {
+        channelId: "cctv2",
+        viewNum: 20
+    }
+]
+```
+
+### Path: /:version/list/:channelId
 #### Method: get
 #### Usage: 获取指定频道id的节目清单, 用于播放器页面显示节目清单
 ```
-path示例
-/list/cctv1
+path示例: /v1/list/cctv1
 
 response:
 [
@@ -83,12 +113,12 @@ response:
 ]
 ```
 
-### Path: /sources/:channelId/:timeline*
+### Path: /:version/sources/:channelId/:timeline*
 #### Method: get
 #### Usage: 获取指定频道, (指定timeline)的播放源, 如果没有timeline则表明是获取该频道直播的播放源, 有timeline则表明是获取该频道某个节目回看的播放源
 ```
 // 直播播放源示例
-// path: /sources/cctv1
+// path: /v1/sources/cctv1
 
 response:
 {   
@@ -96,32 +126,42 @@ response:
     sourceList: [
         {
             name: "清华视频源",
-            path: "https://path/to/your.m3u8"
+            path: "https://path/to/your.m3u8",
+            thumbnailsTime: 1529689210 // 如果是直播这个time是不是没用
         },
         {
             name: "北邮视频源",
-            path: "https://path/to/your.m3u8"
+            path: "https://path/to/your.m3u8",
+            thumbnailsTime: 1529689210
         }
     ]
 }
 
 
 // 回看节目播放源示例
-// path: /sources/cctv1/1529424360-1529426160
+// path: /v1/sources/cctv1/1529424360-1529426160
 
-response:
 response:
 {
     title: "新闻联播", // 节目名称
     sourceList: [
         {
             name: "清华视频源",
-            path: "https://path/to/your.m3u8"
+            path: "https://path/to/your.m3u8",
+            thumbnailsTime: 1529689210
         },
         {
             name: "北邮视频源",
-            path: "https://path/to/your.m3u8"
+            path: "https://path/to/your.m3u8",
+            thumbnailsTime: 1529689210
         }
     ]
 }
+```
+
+### Path: /:version/thumbnails/:channelId/:thumbnailsTime/{time}.png
+#### Method: get
+#### Usage: 获取节目的略缩图
+```
+示例path: /v1/thumbnails/cctv1/1212313123/1232312.png
 ```
