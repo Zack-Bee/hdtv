@@ -15,17 +15,7 @@ response:
                 name: "CCTV-1", // 频道的名字
                 channelId: "cctv1", // 频道的id
                 snapshotUrl: "/snapshot/xxxx.png", // 节目snapshot的地址
-                keyWord: "", // (可选)节目搜索的关键词, 如果没有则默认是title + name,
-                videoList: [
-                    {
-                        time: 1529943420,
-                        title: "动物世界"
-                    },
-                    {
-                        time: 1529943420,
-                        title: "新闻联播"
-                    }
-                ],
+                keyWord: "", // (可选)节目搜索的关键词, 如果没有则默认是title + name
                 canPlay: true // 是否当前有能够播放的视频源
             }
         ]
@@ -67,21 +57,21 @@ response:
 [
     {
         channelId: "cctv1",
-        viewNum: 10
+        viewerNum: 10
     },
     {
         channelId: "cctv2",
-        viewNum: 20
+        viewerNum: 20
     }
 ]
 ```
 
-### Path: /:version/list/:channelId
+### Path: /:version/list/:channelId/:number
 #### Method: get
 #### Usage: 获取指定频道id的节目清单, 用于播放器页面显示节目清单
 ```
-path示例: /v1/list/cctv1
-
+path示例: /v1/list/cctv1/7
+// 七天的数据
 response:
 [
     {
@@ -89,11 +79,13 @@ response:
         list: [
             {
                 title: "新闻联播",
-                timeline: "1529424360-1529426160"
+                startTime: 1529424360,
+                endTime: 1529426160
             },
             {
                 title: "天气预报",
-                timeline: "1529477777-1529488888"
+                startTime: 1529477777,
+                endTime: 1529488888
             }
         ]
     },
@@ -102,11 +94,33 @@ response:
         list: [
             {
                 title: "新闻联播",
-                timeline: "1529424360-1529426160"
+                startTime: 1529424360,
+                endTime: 1529426160
             },
             {
                 title: "天气预报",
-                timeline: "1529477777-1529488888"
+                startTime: 1529477777,
+                endTime: 1529488888
+            }
+        ]
+    }
+]
+
+path示例: v1/list/cctv1/1
+// 今天的数据
+[
+    {
+        date: "7月17日",
+        list: [
+            {
+                title: "新闻联播",
+                startTime: 1529424360,
+                endTime: 1529426160
+            },
+            {
+                title: "天气预报",
+                startTime: 1529477777,
+                endTime: 1529488888
             }
         ]
     }
