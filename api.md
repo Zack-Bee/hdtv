@@ -141,12 +141,12 @@ response:
         {
             name: "清华视频源",
             path: "https://path/to/your.m3u8",
-            thumbnailsTime: 1529689210 // 如果是直播这个time是不是没用
+            thumbnails: "https://true/path/in/flowplayer/{time}.png" // 直接用于flowplayer的略缩图格式字符串
         },
         {
             name: "北邮视频源",
             path: "https://path/to/your.m3u8",
-            thumbnailsTime: 1529689210
+            thumbnails: "https://true/path/in/flowplayer/{time}.png"
         }
     ]
 }
@@ -162,12 +162,12 @@ response:
         {
             name: "清华视频源",
             path: "https://path/to/your.m3u8",
-            thumbnailsTime: 1529689210
+            thumbnails: "https://true/path/in/flowplayer/{time}.png"
         },
         {
             name: "北邮视频源",
             path: "https://path/to/your.m3u8",
-            thumbnailsTime: 1529689210
+            thumbnails: "https://true/path/in/flowplayer/{time}.png"
         }
     ]
 }
