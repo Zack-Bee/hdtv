@@ -1,6 +1,8 @@
-const host = "0.0.0.0"
+const host = "https://hdtv.neu6.edu.cn",
+    version = "v1"
 module.exports = {
     host,
-    channels: `${host}/channels`,
-    snapshotBaseUrl: "https://iptv2.cic.tsinghua.edu.cn/snapshot",
+    channels: `${host}/${version}/channels`,
+    details: `${host}/${version}/details`,
+    sources: `${host}/${version}/sources`
 }

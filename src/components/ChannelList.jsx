@@ -48,7 +48,8 @@ const ChannelItem = (props) => {
     return (
         <Transition in={props.isShow} unmountOnExit timeout={300}>
             {(state) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} classes={{ item: `${classes.default} ${classes[state]}` }}>
+                <Grid item xs={12} sm={6} md={4} lg={3} 
+                    classes={{ item: `${classes.default} ${classes[state]}` }}>
                     <Link to={`/player/${props.channelId}`}>
                         <div className="ChannelListWrapper">
                             <Card classes={{ root: classes.root }}>
@@ -56,7 +57,7 @@ const ChannelItem = (props) => {
                                     unmountOnExit>
                                     <CardMedia
                                         className={classes.media}
-                                        image={`${config.snapshotBaseUrl}/${props.channelId}.jpg?${props.cacheNum}`}
+                                        image={`${config.host}${props.imageSrc}?${props.cacheNum}`}
                                         title={props.name}
                                     />
                                 </Collapse>
@@ -64,7 +65,8 @@ const ChannelItem = (props) => {
                                     <div style={{
                                         display: "flex",
                                         justifyContent: "space-between",
-                                        color: grey[600]
+                                        color: grey[600],
+                                        alignItems: "center"
                                     }}>
                                         <div>{props.name}</div>
                                         <div style={{
@@ -116,6 +118,7 @@ class ChannelList extends React.Component {
                             cacheNum={this.props.cacheNum}
                             channelId={channel.channelId}
                             viewerNum={channel.viewerNum}
+                            imageSrc={channel.snapshotUrl}
                             isShow={`${channel.name} ${channel.title}`.
                                 toLowerCase().includes(this.props.filter)} />
                     ))}

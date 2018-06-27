@@ -11,6 +11,7 @@ import HomeIcon from "@material-ui/icons/Home"
 import Player from "../components/Player.jsx"
 import VideoListButton from "../components/VideoListButton.jsx"
 import FavoriteButton from "../components/FavoriteButton.jsx"
+import config from "../../config/config"
 
 const styles = {
     root: {
@@ -39,7 +40,7 @@ class PlayerPage extends React.Component {
                 <AppBar position="static" classes={{ root: classes.appBar }}>
                     <Toolbar>
                         <Tooltip title="返回频道列表">
-                            <Link to="/list/channel/所有频道">
+                            <Link to="/list/channel/热门频道">
                                 <IconButton className={classes.menuButton}
                                     color="inherit" aria-label="Home">
                                     <HomeIcon />
@@ -56,16 +57,49 @@ class PlayerPage extends React.Component {
                             channel={match.params.channel}/>
                     </Toolbar>
                 </AppBar>
-                <Player />
+                <Player path={this.state.currentSourcePath}
+                    title={this.state.title} 
+                    isLive={!Boolean(this.state.timeline)}/>
+                />
             </div>
         )
+    }
+
+    setTitle(title) {
+        this.setState({
+            title
+        })
     }
 
     constructor(props) {
         super(props)
         this.state = {
-            title: "正在加载"
+            title: "正在加载",
+            sourceList: [],
+            currentSourcePath: "",
+            currentSourceName: "",
+            timeline: ""
         }
+
+        this.setTitle = this.setTitle.bind(this)
+    }
+
+    componentDidMount() {
+        let channel = this.props.match.params.channel,
+            timeline = this.props.match.params.timeline
+
+        fetch(`${config.sources}/${channel}/${timeline || ""}`).then((res) => {
+            res.json().then((data) => {
+                console.log(data)
+                this.setTitle(data.title)
+                this.setState({
+                    sourceList: data.sourceList,
+                    currentSourceName: data.sourceList[0].name,
+                    currentSourcePath: data.sourceList[0].path,
+                    timeline
+                })
+            })
+        })
     }
 }
 

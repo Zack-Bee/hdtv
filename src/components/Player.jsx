@@ -6,12 +6,12 @@ import swf from 'flowplayer/dist/flowplayer.swf'
 import swfHls from 'flowplayer/dist/flowplayerhls.swf'
 import "flowplayer/dist/skin/skin.css"
 import flowplayer from 'flowplayer'
-// import thumbnails from "../plugins/flowplayer.thumbnails"
+import thumbnails from "../plugins/flowplayer.thumbnails"
 
 window.Hls = Hls
 
 // 增加进度条预览图片扩展
-// thumbnails(flowplayer)
+thumbnails(flowplayer)
 
 const styles = (theme) => ({
     player: {
@@ -24,8 +24,8 @@ const styles = (theme) => ({
     }
 })
 
-const loadNewVideo = (container, isLive, src) => (
-    flowplayer(container, {
+const loadNewVideo = (container, isLive, src, title, thumbnails) => {
+    const option = {
         share: false,
         autoplay: true,
         clip: {
@@ -43,9 +43,25 @@ const loadNewVideo = (container, isLive, src) => (
             xhrSetup: (xhr) => {
                 xhr.withCredentials = false
             },
+        },
+        native_fullscreen: true
+    }
+
+    if (!isPc) {
+        option.clip.title = title
+    }
+
+    if (!isLive) {
+        option.clip.thumbnails = {
+            template: thumbnails,
+            interval: 1,
+            startIndex: 1,
+            preload: false
         }
-    })
-)
+    }
+
+    return flowplayer(container, option)
+}
 
 const isPc = (() => {
     var userAgentInfo = navigator.userAgent
@@ -64,6 +80,9 @@ class Player extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            sourceList: [],
+            currentSourcePath: "",
+            currentSourceName: ""
         }
     }
 
@@ -81,15 +100,9 @@ class Player extends React.Component {
                     `}
                 </style>
                 <div id="player" ref={(ref) => { this.playerNode = ref }}
-                    className={`${this.props.classes.player} fp-slim`} />
+                    className={`${this.props.classes.player}`} />
             </React.Fragment>
         )
-    }
-
-    componentDidMount() {
-        this.player = loadNewVideo(this.playerNode, true,
-            "https://media2.neu6.edu.cn/hls/cctv1hd.m3u8")
-        console.log(this.player.engine)
     }
 
     componentWillUnmount() {
@@ -100,6 +113,19 @@ class Player extends React.Component {
         }
 
         this.player.shutdown()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!this.props.path) {
+            return
+        }
+        if (this.props.path === prevProps.path) {
+            return
+        }
+        this.player = loadNewVideo(this.playerNode, this.props.isLive,
+            this.props.path, this.props.title)
+        console.log("did update")
+        console.log("path: ", this.props.path)
     }
 }
 

@@ -67,7 +67,7 @@ const App = () => (
     <React.Fragment>
         <CssBaseline />
         <Route path="/list/channel/:category" children={({ match }) => (
-            <Transition unmountOnExit timeout={500} in={Boolean(match)} >
+            <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)} >
                 {
                     (state) => (
                         match &&
@@ -79,11 +79,10 @@ const App = () => (
                 }
             </Transition>
         )} />
-        <Route path="/player/:channel/:video*" children={({ match }) => (
-            <Transition unmountOnExit timeout={500} in={Boolean(match)}>
+        <Route path="/player/:channel/:timeline*" children={({ match }) => (
+            <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)}>
                 {
-                    (state) => (
-                        match &&
+                    (state) => (match &&
                         (<div style={Object.assign({},
                             defaultPlayerStyle, transitionPlayerStyle[state])}>
                             <PlayerPage match={match} />
@@ -96,12 +95,12 @@ const App = () => (
             let page = match.params.page
             if (page === undefined) {
                 return (
-                    <Redirect to="/list/channel/所有频道"/> 
+                    <Redirect to="/list/channel/热门频道"/> 
                 )
             }
             if (!page.startsWith("player") && !page.startsWith("list")) {
                 return (
-                    <Redirect to="/list/channel/所有频道"/> 
+                    <Redirect to="/list/channel/热门频道"/> 
                 )
             }
 
