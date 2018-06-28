@@ -22,11 +22,14 @@ import config from "../../config/config"
 
 const drawerWidth = 240
 
-const fetchPromise = (url) => {
+const fetchPromise = (url, id) => {
     return new Promise((resolve, reject) => {
         fetch(url).then((res) => {
             res.json().then((data) => {
-                resolve(data)
+                resolve({
+                    id,
+                    list: data[0].list
+                })
             }, (err) => {
                 reject(err)
             })
@@ -162,7 +165,6 @@ class MiniDrawer extends React.Component {
                         list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
                     }
                 }
-                console.log(channels)
 
                 this.setState({
                     categoryList: channels
@@ -175,31 +177,75 @@ class MiniDrawer extends React.Component {
         })
     }
 
-    getChannelTitle(channels) {
-        let storeSaveTime = sessionStorage.getItem("saveTime"),
-            saveTime = Number(storeSaveTime),
-            saveDate = new Date(saveTime).getDate(),
-            currentDate = new Date().getDate()
-        if (!storeSaveTime ||
-            (saveTime - Date.now() > 40 * 60 * 1000) ||
-            currentDate !== saveDate) {
-            for (let i = 0, list = channels, len = list.length;
-                i < len; i++) {
-                if (list[i].name === "所有频道") {
-                    let fetchAllPromise = []
-                    for (let j = 0;
-                        j < list[i].sourceList.length;
-                        j++) {
-                        let channelId = list[i].sourceList.channelId
-                        fetchAllPromise.push(
-                            fetchPromise(
-                                `${config.list}/${channelId}/1`
-                            )
-                        )
-                    }
+    freshTitle(videoMap) {
+        let currentMap = {},
+            now = Math.floor(Date.now() / 1000)
+        for (let i in videoMap) {
+            for (let j = 0, len = videoMap[i].length; j < len; j++) {
+                if ((now <= videoMap[i][j].endTime) &&
+                    (now >= videoMap[i][j].startTime)) {
+                    currentMap[i] = videoMap[i][j].title
+                    break
                 }
             }
         }
+        for (let i = 0, categoryList = this.state.categoryList;
+            i < categoryList.length; i++) {
+            for (let j = 0; j < categoryList[i].channelList.length; j++) {
+                let channel = categoryList[i].channelList[j]
+                channel.title = currentMap[channel.channelId] || " "
+            }
+        }
+        this.setState({
+            categoryList: this.state.categoryList
+        })
+        console.log(currentMap)
+    }
+
+    getvideoMap(channels) {
+        return new Promise((resolve) => {
+            let storeSaveTime = sessionStorage.getItem("saveTime"),
+                saveTime = Number(storeSaveTime),
+                saveDate = new Date(saveTime).getDate(),
+                currentDate = new Date().getDate(),
+                videoMap = sessionStorage.getItem("videoMap")
+            if (!storeSaveTime || !videoMap ||
+                (saveTime - Date.now() > 40 * 60 * 1000) ||
+                currentDate !== saveDate) {
+                console.log("get videoMap online")
+                for (let i = 0, list = channels, len = list.length;
+                    i < len; i++) {
+                    console.log(list[i])
+                    if (list[i].name === "所有频道") {
+                        let fetchAllPromise = []
+                        for (let j = 0;
+                            j < list[i].channelList.length;
+                            j++) {
+                            let channelId = list[i].channelList[j].channelId
+                            fetchAllPromise.push(
+                                fetchPromise(
+                                    `${config.list}/${channelId}/1`,
+                                    list[i].channelList[j].channelId
+                                )
+                            )
+                        }
+                        let allVideo = {}
+                        Promise.all(fetchAllPromise).then((list) => {
+                            list.forEach((info) => {
+                                allVideo[info.id] = info.list
+                            })
+                            sessionStorage.setItem("saveTime", Date.now())
+                            sessionStorage.setItem("videoMap",
+                                JSON.stringify(allVideo))
+                            resolve(allVideo)
+                        })
+                    }
+                }
+            } else {
+                console.log("get videoMap from sessionStorage")
+                resolve(JSON.parse(videoMap))
+            }
+        })
     }
 
     render() {
@@ -268,8 +314,6 @@ class MiniDrawer extends React.Component {
                     </List>
                     <Divider />
                     <List>
-                        <CategoryItem key="100" name="最近观看"
-                            isActive={this.state.category === "最近观看"} />
                         <CategoryItem key="101" name="我的收藏"
                             isActive={this.state.category === "我的收藏"} />
                     </List>
@@ -293,6 +337,36 @@ class MiniDrawer extends React.Component {
         console.log(this.props)
         fetch(config.channels).then((res) => {
             res.json().then((channels) => {
+                // 获取收藏的节目
+                let favoriteList = localStorage.getItem("favoriteList")
+                if (!favoriteList) {
+                    localStorage.setItem("favoriteList", JSON.stringify([]))
+                    this.favoriteCategory = []
+                    console.log("not store")
+                } else {
+                    console.log("have store")
+                    favoriteList = JSON.parse(favoriteList)
+                    for (let i = 0, categoryList = channels,
+                        len = categoryList.length; i < len; i++) {
+                        if (categoryList[i].name === "所有频道") {
+                            this.favoriteCategory = []
+                            favoriteList.forEach((id) => {
+                                for (let j = 0; j < categoryList[i].channelList.length;
+                                    j++) {
+                                    if (categoryList[i].channelList[j].channelId ===
+                                        id) {
+                                        this.favoriteCategory.push(
+                                            categoryList[i].channelList[j]
+                                        )
+                                    }
+                                }
+                            })
+                            console.log(this.favoriteCategory)
+                            break
+                        }
+                    }
+                }
+
 
                 fetch(config.details).then((res) => {
                     res.json().then((details) => {
@@ -323,12 +397,14 @@ class MiniDrawer extends React.Component {
                                     currentChannelList: list[i].channelList
                                 })
                                 console.log(list[i])
-                                return
+                                break
                             }
-
                         }
 
-
+                        this.getvideoMap(channels).then((videoMap) => {
+                            console.log(videoMap)
+                            this.freshTitle(videoMap)
+                        })
                     })
                 })
             })
@@ -340,6 +416,8 @@ class MiniDrawer extends React.Component {
                 timestamp: Date.now()
             })
         }, 1000 * 120)
+
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -347,6 +425,12 @@ class MiniDrawer extends React.Component {
         if (prevProps.category === this.props.category &&
             prevState.timestamp === this.state.timestamp) {
             return
+        }
+        console.log(this.favoriteCategory)
+        if (this.props.category === "我的收藏") {
+            this.setState({
+                currentChannelList: this.favoriteCategory || []
+            })
         }
         for (let i = 0, list = this.state.categoryList, len = list.length;
             i < len; i++) {
