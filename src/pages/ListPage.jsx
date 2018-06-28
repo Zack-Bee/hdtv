@@ -13,6 +13,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import Tooltip from '@material-ui/core/Tooltip'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ViewModule from "@material-ui/icons/ViewModule"
+import Grid from "@material-ui/core/Grid"
 import ViewHeadline from "@material-ui/icons/ViewHeadline"
 import blue from "@material-ui/core/colors/blue"
 import SearchInput from "../components/SearchInput.jsx"
@@ -103,6 +104,12 @@ const styles = (theme) => ({
         padding: `32px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
         overflowY: "auto",
         marginTop: 56
+    },
+    container: {
+        minHeight: "calc(100% - 340px)",
+        [theme.breakpoints.only("xs")]: {
+            minHeight: "0"
+        }
     }
 })
 
@@ -322,12 +329,105 @@ class MiniDrawer extends React.Component {
                     <div className={classes.toolbar}
                         style={{ height: 0, minHeight: 0 }}
                     />
-                    <div>
+                    <div className={classes.container}>
                         <ChannelList isHidePicture={this.state.isHidePicture}
                             channelList={this.state.currentChannelList}
                             cacheNum={this.state.timestamp}
                             filter={this.state.filter} />
                     </div>
+                    <footer style={{
+                        background: blue[500],
+                        color: "#fff",
+                        marginTop: "40px",
+                        padding: "20px 70px 20px 70px"
+                    }}>
+                        <Grid container alignContent="space-around">
+                            <Grid item xs={12} sm={6} >
+                                <Typography variant="headline" paragraph color="inherit">
+                                    友情链接
+                                </Typography>
+                                <a href="http://tv.byr.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        北邮人IPTV直播
+                                    </Typography>
+                                </a>
+                                <a href="http://video.dlut.edu.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        大工媒体服务
+                                    </Typography>
+                                </a>
+                                <a href="http://tv.jlu6.edu.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        吉大电视直播
+                                    </Typography>
+                                </a>
+                                <a href="http://dh.sau.edu.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        沈航媒体服务
+                                    </Typography>
+                                </a>
+
+                                <a href="http://tv6.ustc.edu.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        中国科大电视直播
+                                    </Typography>
+                                </a>
+                                <a href="http://hdtv.lzu6.edu.cn/">
+                                    <Typography variant="subheading" color="inherit">
+                                        兰州大学高清电视
+                                    </Typography>
+                                </a>
+                                <a href="http://itv.ahau.edu.cn">
+                                    <Typography variant="subheading" color="inherit">
+                                        安徽农大网络电视
+                                    </Typography>
+                                </a>
+                                <a href="http://iptv.neusoft.edu.cn">
+                                    <Typography variant="subheading" color="inherit">
+                                        大连东软信息技术学院IPv6网络电视
+                                    </Typography>
+                                </a>
+                                <a href="http://iptv.tsinghua.edu.cn/">
+                                    <Typography variant="subheading" paragraph color="inherit">
+                                        清华大学IPTV
+                                    </Typography>
+                                </a>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Typography variant="headline" paragraph color="inherit">
+                                    联系我们
+                                </Typography>
+                                <Typography variant="subheading" color="inherit">
+                                    东北大学网络中心
+                                </Typography>
+                                <a href="https://github.com/Zack-Bee/hdtv">
+                                    <Typography variant="subheading" paragraph color="inherit">
+                                        Github
+                                    </Typography>
+                                </a>
+                                <a href="https://hdtv.neu6.edu.cn/thx">
+                                <Typography variant="headline" paragraph color="inherit">
+                                    鸣谢
+                                </Typography>
+                                </a>
+                                <a href="https://hdtv.neu6.edu.cn/faq">
+                                <Typography variant="headline" paragraph color="inherit">
+                                    FAQ
+                                </Typography>
+                                </a>
+                                <a href="https://hdtv.neu6.edu.cn">
+                                <Typography variant="subheading" color="inherit">
+                                    旧版HDTV
+                                </Typography>
+                                </a>
+                                <a href="https://hdtv.neu6.edu.cn/soft/neutv.apk">
+                                <Typography variant="subheading" color="inherit">
+                                    安卓客户端
+                                </Typography>
+                                </a>
+                            </Grid>
+                        </Grid>
+                    </footer>
                 </main>
             </div>
         )
@@ -416,8 +516,6 @@ class MiniDrawer extends React.Component {
                 timestamp: Date.now()
             })
         }, 1000 * 120)
-
-
     }
 
     componentDidUpdate(prevProps, prevState) {
