@@ -5,6 +5,7 @@ import Collapse from '@material-ui/core/Collapse'
 import ListItemText from '@material-ui/core/ListItemText'
 import { Link } from 'react-router-dom'
 import List from '@material-ui/core/List'
+import config from "../../config/config"
 
 
 const styles = (theme) => ({
@@ -33,22 +34,42 @@ const VideoList = (props) => {
                 timeout="auto"
                 unmountOnExit>
                 <List component="div" disablePadding>
-                    {props.list.list.map((videoInfo) => (
-                        <Link to={`/player/${props.channel}/${
-                            videoInfo.timeline}`
-                        } key={`${props.channel}-${videoInfo.timeline}`}>
-                            <ListItem divider button className={
-                                classes.nested
-                            }>
-                                <ListItemText
-                                    primary={`${videoInfo.timeline} ${
-                                        videoInfo.title
-                                        }`}
-                                />
-                            </ListItem>
-                        </Link>
-                    )
-                    )}
+                    {props.list.list.map((videoInfo) => {
+                        let startTime = new Date(videoInfo.startTime * 1000),
+                            hour = startTime.getHours(),
+                            minute = startTime.getMinutes()
+                        if (props.now > videoInfo.endTime) {
+                            return (
+                                <Link to={`/${config.version}/player/${props.channel}/${
+                                    videoInfo.startTime}-${videoInfo.endTime}`
+                                } key={`${props.channel}-${videoInfo.startTime}`}>
+                                    <ListItem divider button className={
+                                        classes.nested
+                                    }>
+                                        <ListItemText
+                                            primary={`${hour}:${minute} ${
+                                                videoInfo.title
+                                                }`}
+                                        />
+                                    </ListItem>
+                                </Link>
+                            )
+                        } else {
+                            return (
+                                <ListItem
+                                    key={`${props.channel}-${videoInfo.startTime}`}
+                                    divider button className={
+                                        classes.nested
+                                    } >
+                                    <ListItemText
+                                        primary={`${hour}:${minute} ${
+                                            videoInfo.title
+                                            }`}
+                                    />
+                                </ListItem>
+                            )
+                        }
+                    })}
                 </List>
             </Collapse>
         </React.Fragment>

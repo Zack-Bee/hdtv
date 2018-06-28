@@ -41,7 +41,7 @@ class PlayerPage extends React.Component {
                 <AppBar position="static" classes={{ root: classes.appBar }}>
                     <Toolbar>
                         <Tooltip title="返回频道列表">
-                            <Link to="/list/channel/热门频道">
+                            <Link to={`/${config.version}/list/channel/热门频道`}>
                                 <IconButton className={classes.menuButton}
                                     color="inherit" aria-label="Home">
                                     <HomeIcon />
@@ -49,7 +49,7 @@ class PlayerPage extends React.Component {
                             </Link>
                         </Tooltip>
                         <Typography variant="title" color="inherit" 
-                            className={classes.flex}
+                            className={classes.flex} noWrap
                         >
                             {this.state.title}
                         </Typography>
@@ -62,8 +62,9 @@ class PlayerPage extends React.Component {
                     </Toolbar>
                 </AppBar>
                 <Player path={this.state.currentSourcePath}
-                    title={this.state.title} 
-                    isLive={!Boolean(this.state.timeline)}/>
+                    title={this.state.title}
+                    isLive={!Boolean(this.state.timeline)}
+                    thumbnails={this.state.thumbnails}/>
                 />
             </div>
         )
@@ -89,7 +90,8 @@ class PlayerPage extends React.Component {
             sourceList: [],
             currentSourcePath: "",
             currentSourceName: "",
-            timeline: ""
+            timeline: "",
+            thumbnails: ""
         }
 
         this.setTitle = this.setTitle.bind(this)
@@ -108,7 +110,31 @@ class PlayerPage extends React.Component {
                     sourceList: data.sourceList,
                     currentSourceName: data.sourceList[0].name,
                     currentSourcePath: data.sourceList[0].path,
-                    timeline
+                    timeline,
+                    thumbnails: config.host + data.sourceList[0].thumbnails
+                })
+            })
+        })
+    }
+
+    componentDidUpdate(prevProps) {
+        let channel = this.props.match.params.channel,
+            timeline = this.props.match.params.timeline,
+            prevChannel = prevProps.match.params.channel,
+            prevTimeline = prevProps.match.params.timeline
+        if (channel === prevChannel && timeline === prevTimeline) {
+            return
+        }
+        fetch(`${config.sources}/${channel}/${timeline || ""}`).then((res) => {
+            res.json().then((data) => {
+                console.log(data)
+                this.setTitle(data.title)
+                this.setState({
+                    sourceList: data.sourceList,
+                    currentSourceName: data.sourceList[0].name,
+                    currentSourcePath: data.sourceList[0].path,
+                    timeline,
+                    thumbnails: config.host + data.sourceList[0].thumbnails
                 })
             })
         })

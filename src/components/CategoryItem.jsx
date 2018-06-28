@@ -19,7 +19,7 @@ import MyLocationIcon from "@material-ui/icons/MyLocation"
 import DefaultIcon from "@material-ui/icons/LiveTv"
 import { withStyles } from '@material-ui/core/styles'
 import blue from "@material-ui/core/colors/blue"
-
+import config from "../../config/config"
 
 const styles = {
     icon: {
@@ -77,7 +77,7 @@ class CategoryItem extends React.Component {
             } : {}} />
         }
         return (
-            <NavLink to={`/list/channel/${this.props.name}`}>
+            <NavLink to={`/${config.version}/list/channel/${this.props.name}`}>
                 <ListItem button onClick={() => {
                     // this.props.onClick(this.props.name)
                 }}>
@@ -98,7 +98,7 @@ class CategoryItem extends React.Component {
 const CategoryItemWithStyles = withStyles(styles)(CategoryItem)
 
 export default ({name, onClick}) => (
-    <Route path={`/list/channel/${name}`}
+    <Route path={`/${config.version}/list/channel/${name}`}
         children={({match}) => (
             <CategoryItemWithStyles name={name} isActive={match} 
                 onClick={onClick}/>

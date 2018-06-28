@@ -22,6 +22,20 @@ import config from "../../config/config"
 
 const drawerWidth = 240
 
+const fetchPromise = (url) => {
+    return new Promise((resolve, reject) => {
+        fetch(url).then((res) => {
+            res.json().then((data) => {
+                resolve(data)
+            }, (err) => {
+                reject(err)
+            })
+        }, (err) => {
+            reject(err)
+        })
+    })
+}
+
 const styles = (theme) => ({
     root: {
         flexGrow: 1,
@@ -97,46 +111,8 @@ class MiniDrawer extends React.Component {
             category: this.props.category,
             search: "",
             isHidePicture: false,
-            currentChannelList: [{
-                name: "CCTV-1",
-                channelId: "cctv1hd",
-                title: "新闻联播",
-                viewerNum: 10,
-                keyWord: "CCTV-1 新闻联播",
-            }, {
-                name: "CCTV-2",
-                channelId: "cctv2hd",
-                title: "新闻联播",
-                viewerNum: 20,
-                keyWord: "CCTV-2 新闻联播"
-            }, {
-                name: "CCTV-3",
-                channelId: "cctv3hd",
-                title: "天气预报",
-                viewerNum: 20,
-                keyWord: "CCTV-3 天气预报"
-            }, {
-                name: "CCTV-3",
-                channelId: "cctv4hd",
-                title: "天气预报",
-                viewerNum: 20,
-                keyWord: "CCTV-3 天气预报"
-            }, {
-                name: "CCTV-3",
-                channelId: "cctv5hd",
-                title: "天气预报",
-                viewerNum: 20,
-                keyWord: "CCTV-3 天气预报"
-            }, {
-                name: "CCTV-3",
-                channelId: "cctv6hd",
-                title: "天气预报",
-                viewerNum: 20,
-                keyWord: "CCTV-3 天气预报"
-            }],
-            categoryList: [
-
-            ],
+            currentChannelList: [],
+            categoryList: [],
             timestamp: Date.now(),
             filter: ""
         }
@@ -197,6 +173,33 @@ class MiniDrawer extends React.Component {
         this.setState({
             timestamp: Date.now()
         })
+    }
+
+    getChannelTitle(channels) {
+        let storeSaveTime = sessionStorage.getItem("saveTime"),
+            saveTime = Number(storeSaveTime),
+            saveDate = new Date(saveTime).getDate(),
+            currentDate = new Date().getDate()
+        if (!storeSaveTime ||
+            (saveTime - Date.now() > 40 * 60 * 1000) ||
+            currentDate !== saveDate) {
+            for (let i = 0, list = channels, len = list.length;
+                i < len; i++) {
+                if (list[i].name === "所有频道") {
+                    let fetchAllPromise = []
+                    for (let j = 0;
+                        j < list[i].sourceList.length;
+                        j++) {
+                        let channelId = list[i].sourceList.channelId
+                        fetchAllPromise.push(
+                            fetchPromise(
+                                `${config.list}/${channelId}/1`
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     render() {
@@ -322,8 +325,10 @@ class MiniDrawer extends React.Component {
                                 console.log(list[i])
                                 return
                             }
-                            
+
                         }
+
+
                     })
                 })
             })

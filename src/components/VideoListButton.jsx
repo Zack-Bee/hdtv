@@ -5,6 +5,7 @@ import List from '@material-ui/core/List'
 import { withStyles } from '@material-ui/core/styles'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import VideoList from "./VideoList.jsx"
+import config from "../../config/config"
 
 const styles = (theme) => ({
     header: {
@@ -50,6 +51,7 @@ class VideoListButton extends React.Component {
                                 {
                                     this.state.videoList.map((list, index) => (
                                         <VideoList list={list} 
+                                            now={this.state.now}
                                             key={`${this.props.channel}-${
                                                 list.date}
                                             `}
@@ -73,33 +75,8 @@ class VideoListButton extends React.Component {
             isListShow: false,
             openIndex: -1,
             videoList: [
-                {
-                    date: "7月18日",
-                    list: [
-                        {
-                            title: "新闻联播",
-                            timeline: "7:30"
-                        },
-                        {
-                            title: "天气预报",
-                            timeline: "8:40"
-                        }
-                    ]
-                },
-                {
-                    date: "7月17日",
-                    list: [
-                        {
-                            title: "新闻联播",
-                            timeline: "4:10"
-                        },
-                        {
-                            title: "天气预报",
-                            timeline: "8:40"
-                        }
-                    ]
-                }
-            ]
+            ],
+            now: Math.floor(Date.now() / 1000)
         }
         this.openList = this.openList.bind(this)
         this.closeList = this.closeList.bind(this)
@@ -115,7 +92,10 @@ class VideoListButton extends React.Component {
         this.setState({ isListShow: false })
     }
     toggleList() {
-        this.setState({ isListShow: !this.state.isListShow })
+        this.setState({ 
+            isListShow: !this.state.isListShow,
+            now: Math.floor(Date.now() / 1000)
+        })
     }
     setOpenIndex(index) {
         if (this.state.openIndex === index) {
@@ -125,7 +105,42 @@ class VideoListButton extends React.Component {
         }
     }
     componentDidUpdate(prevProps, prevState) {
-        // console.log(prevProps, prevState)
+        if (!this.props.channel || this.props.channel === prevProps.channel) {
+            return
+        }
+        fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
+            res.json().then((list) => {
+                console.log(list)
+                this.setState({
+                    videoList: list.reverse()
+                })
+            })
+        })
+    }
+
+    componentDidMount() {
+        fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
+            res.json().then((list) => {
+                console.log(list)
+                this.setState({
+                    videoList: list.reverse()
+                })
+            })
+        })
+        this.timer = setImmediate(() => {
+            this.setState({
+                now: Math.floor(Date.now() / 1000)
+            })
+
+            fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
+                res.json().then((list) => {
+                    console.log(list)
+                    this.setState({
+                        videoList: list.reverse()
+                    })
+                })
+            })
+        }, 1000 * 60 * 5)
     }
 }
 

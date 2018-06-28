@@ -50,7 +50,7 @@ const ChannelItem = (props) => {
             {(state) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} 
                     classes={{ item: `${classes.default} ${classes[state]}` }}>
-                    <Link to={`/player/${props.channelId}`}>
+                    <Link to={`/${config.version}/player/${props.channelId}`}>
                         <div className="ChannelListWrapper">
                             <Card classes={{ root: classes.root }}>
                                 <Collapse in={!props.isHidePicture} timeout="auto"

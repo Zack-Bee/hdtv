@@ -115,7 +115,7 @@ class Player extends React.Component {
         this.player.shutdown()
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (!this.props.path) {
             return
         }
@@ -130,7 +130,7 @@ class Player extends React.Component {
             this.player.shutdown()
         }
         this.player = loadNewVideo(this.playerNode, this.props.isLive,
-            this.props.path, this.props.title)
+            this.props.path, this.props.title, this.props.thumbnails)
         console.log("did update")
         console.log("path: ", this.props.path)
     }

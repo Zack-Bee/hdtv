@@ -11,60 +11,62 @@ import "./index.css"
 import 'typeface-roboto'
 import ListPage from "./pages/ListPage.jsx"
 import PlayerPage from "./pages/PlayerPage.jsx"
-import { Transition } from 'react-transition-group'
+import config from "../config/config"
+// import { Transition } from 'react-transition-group'
 
-const defaultListStyle = {
-    position: "fixed",
-    transition: "left 500ms",
-    left: "-100vw",
-    top: "0",
-    width: "100vw",
-    height: "100vh"
-}
+// const defaultListStyle = {
+//     position: "fixed",
+//     transition: "left 500ms",
+//     left: "-100vw",
+//     top: "0",
+//     width: "100vw",
+//     height: "100vh"
+// }
 
-const defaultPlayerStyle = {
-    position: "fixed",
-    transition: "left 500ms",
-    left: "100vw",
-    top: "0",
-    width: "100vw",
-    height: "100vh"
-}
+// const defaultPlayerStyle = {
+//     position: "fixed",
+//     transition: "left 500ms",
+//     left: "100vw",
+//     top: "0",
+//     width: "100vw",
+//     height: "100vh"
+// }
 
-const transitionListStyle = {
-    entering: {
-        left: "0"
-    },
-    entered: {
-        left: "0"
-    },
-    exiting: {
-        left: "-100vw"
-    },
-    exited: {
-        left: "-100vw"
-    }
-}
+// const transitionListStyle = {
+//     entering: {
+//         left: "0"
+//     },
+//     entered: {
+//         left: "0"
+//     },
+//     exiting: {
+//         left: "-100vw"
+//     },
+//     exited: {
+//         left: "-100vw"
+//     }
+// }
 
-const transitionPlayerStyle = {
-    entering: {
-        left: "0vw"
-    },
-    entered: {
-        left: "0vw"
-    },
-    exiting: {
-        left: "100vw"
-    },
-    exited: {
-        left: "100vw",
-    }
-}
+// const transitionPlayerStyle = {
+//     entering: {
+//         left: "0vw"
+//     },
+//     entered: {
+//         left: "0vw"
+//     },
+//     exiting: {
+//         left: "100vw"
+//     },
+//     exited: {
+//         left: "100vw",
+//     }
+// }
 
 const App = () => (
     <React.Fragment>
         <CssBaseline />
-        <Route path="/list/channel/:category" children={({ match }) => (
+        <Route path={`/${config.version}/list/channel/:category`}
+            children={({ match }) => (
             // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)} >
             //     {
             //         (state) => (
@@ -76,7 +78,8 @@ const App = () => (
             //     }
             // </Transition>
         )} />
-        <Route path="/player/:channel/:timeline*" children={({ match }) => (
+        <Route path={`/${config.version}/player/:channel/:timeline*`} 
+            children={({ match }) => (
             // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)}>
             //     {
             //         (state) => (
@@ -88,20 +91,23 @@ const App = () => (
             //     }
             // </Transition>
         )} />
-        <Route path="/:page*" render={({match}) => {
-            let page = match.params.page
-            if (page === undefined) {
-                return (
-                    <Redirect to="/list/channel/热门频道"/> 
-                )
-            }
-            if (!page.startsWith("player") && !page.startsWith("list")) {
-                return (
-                    <Redirect to="/list/channel/热门频道"/> 
-                )
-            }
+        <Route path={`/${config.version}/:page*`} 
+            render={({match}) => {
+                let page = match.params.page
+                if (page === undefined) {
+                    return (
+                        <Redirect to={`/${config.version}/list/channel/热门频道`}
+                        /> 
+                    )
+                }
+                if (!page.startsWith("player") && !page.startsWith("list")) {
+                    return (
+                        <Redirect to={`/${config.version}/list/channel/热门频道`}
+                        /> 
+                    )
+                }
 
-            return (<React.Fragment/>)
+                return (<React.Fragment/>)
         }}>
         </Route>
     </React.Fragment>
