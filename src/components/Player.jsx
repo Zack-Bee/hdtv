@@ -107,7 +107,7 @@ class Player extends React.Component {
 
     componentWillUnmount() {
         // 卸载播放器
-
+        console.log("will unmount")
         if (this.player.engine) {
             this.player.unload()
         }
@@ -121,6 +121,13 @@ class Player extends React.Component {
         }
         if (this.props.path === prevProps.path) {
             return
+        }
+        if (this.player) {
+            if (this.player.engine) {
+                this.player.unload()
+            }
+    
+            this.player.shutdown()
         }
         this.player = loadNewVideo(this.playerNode, this.props.isLive,
             this.props.path, this.props.title)

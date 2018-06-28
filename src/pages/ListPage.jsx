@@ -338,7 +338,7 @@ class MiniDrawer extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log(prevProps, prevState)
+        // console.log(prevProps, prevState)
         if (prevProps.category === this.props.category &&
             prevState.timestamp === this.state.timestamp) {
             return

@@ -4,5 +4,6 @@ module.exports = {
     host,
     channels: `${host}/${version}/channels`,
     details: `${host}/${version}/details`,
-    sources: `${host}/${version}/sources`
+    sources: `${host}/${version}/sources`,
+    version
 }

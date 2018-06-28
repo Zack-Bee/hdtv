@@ -3,16 +3,14 @@ import ReactDOM from "react-dom"
 import {
     BrowserRouter as Router,
     Route,
-    Redirect,
-    Switch
+    Redirect
 } from 'react-router-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { withStyles } from '@material-ui/core/styles'
-import "./reset.css"
+import "./index.css"
 import 'typeface-roboto'
 import ListPage from "./pages/ListPage.jsx"
 import PlayerPage from "./pages/PlayerPage.jsx"
-import Collapse from '@material-ui/core/Collapse'
 import { Transition } from 'react-transition-group'
 
 const defaultListStyle = {
@@ -50,16 +48,16 @@ const transitionListStyle = {
 
 const transitionPlayerStyle = {
     entering: {
-        left: "0"
+        left: "0vw"
     },
     entered: {
-        left: "0"
+        left: "0vw"
     },
     exiting: {
         left: "100vw"
     },
     exited: {
-        left: "100vw"
+        left: "100vw",
     }
 }
 
@@ -67,29 +65,28 @@ const App = () => (
     <React.Fragment>
         <CssBaseline />
         <Route path="/list/channel/:category" children={({ match }) => (
-            <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)} >
-                {
-                    (state) => (
+            // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)} >
+            //     {
+            //         (state) => (
                         match &&
-                        (<div style={Object.assign({},
-                            defaultListStyle, transitionListStyle[state])}>
+                        (<div id="list">
                             <ListPage category={match.params.category} />
                         </div>)
-                    )
-                }
-            </Transition>
+            //         )
+            //     }
+            // </Transition>
         )} />
         <Route path="/player/:channel/:timeline*" children={({ match }) => (
-            <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)}>
-                {
-                    (state) => (match &&
-                        (<div style={Object.assign({},
-                            defaultPlayerStyle, transitionPlayerStyle[state])}>
+            // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)}>
+            //     {
+            //         (state) => (
+                        match &&
+                        (<div id="player">
                             <PlayerPage match={match} />
                         </div>)
-                    )
-                }
-            </Transition>
+            //         )
+            //     }
+            // </Transition>
         )} />
         <Route path="/:page*" render={({match}) => {
             let page = match.params.page

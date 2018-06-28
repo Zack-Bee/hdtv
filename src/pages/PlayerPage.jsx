@@ -11,6 +11,7 @@ import HomeIcon from "@material-ui/icons/Home"
 import Player from "../components/Player.jsx"
 import VideoListButton from "../components/VideoListButton.jsx"
 import FavoriteButton from "../components/FavoriteButton.jsx"
+import SourceButton from "../components/SourceButton.jsx"
 import config from "../../config/config"
 
 const styles = {
@@ -52,6 +53,9 @@ class PlayerPage extends React.Component {
                         >
                             {this.state.title}
                         </Typography>
+                        <SourceButton name={this.state.currentSourceName}
+                            setSource={this.setSource}
+                            sourceList={this.state.sourceList}/>
                         <FavoriteButton channel={match.params.channel}/>
                         <VideoListButton color="inherit" 
                             channel={match.params.channel}/>
@@ -71,6 +75,13 @@ class PlayerPage extends React.Component {
         })
     }
 
+    setSource(name, path) {
+        this.setState({
+            currentSourceName: name,
+            currentSourcePath: path
+        })
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -82,6 +93,7 @@ class PlayerPage extends React.Component {
         }
 
         this.setTitle = this.setTitle.bind(this)
+        this.setSource = this.setSource.bind(this)
     }
 
     componentDidMount() {
