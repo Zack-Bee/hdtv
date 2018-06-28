@@ -15,7 +15,7 @@ module.exports = {
         new WebpackPwaManifest({
             name: "东北大学HDTV",
             short_name: "HDTV",
-            start_url: "./",
+            start_url: "/v1",
             description: "HDTV, 高清, 快速, 简洁",
             background_color: "#fff",
             dir: "ltr",

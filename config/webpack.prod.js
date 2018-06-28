@@ -7,7 +7,7 @@ const config = merge(common, {
     output: {
         filename: "[name].[chunkhash].js",
         path: path.resolve(__dirname, "../dist"),
-        publicPath: "/"
+        publicPath: "/v1"
     },
     mode: "production",
     module: {

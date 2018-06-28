@@ -1,92 +1,92 @@
 {
   "icons": [
     {
-      "src": "/icon_256x256.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_256x256.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "256x256",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_128x128.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_128x128.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "128x128",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_96x96.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_96x96.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "96x96",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_72x72.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_72x72.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "72x72",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_48x48.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_48x48.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "48x48",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_36x36.913607b31dc70ad6dc0b29a132c6ce40.svg",
+      "src": "/v1/icon_36x36.913607b31dc70ad6dc0b29a132c6ce40.svg",
       "sizes": "36x36",
       "type": "image/svg+xml"
     },
     {
-      "src": "/icon_256x256.d7aa8498b277c94801117f038ee7367b.png",
+      "src": "/v1/icon_256x256.d7aa8498b277c94801117f038ee7367b.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "/icon_128x128.f3fbb95c0df05e332de910e8f17cfb97.png",
+      "src": "/v1/icon_128x128.f3fbb95c0df05e332de910e8f17cfb97.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/icon_96x96.767e73deeb7ffd09ae3bc309b6bd9f52.png",
+      "src": "/v1/icon_96x96.767e73deeb7ffd09ae3bc309b6bd9f52.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/icon_72x72.4b34cc5c7496e0017188db4636b1f4e0.png",
+      "src": "/v1/icon_72x72.4b34cc5c7496e0017188db4636b1f4e0.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "/icon_48x48.2b48cef4969c8cd5a8eb1e410711fedd.png",
+      "src": "/v1/icon_48x48.2b48cef4969c8cd5a8eb1e410711fedd.png",
       "sizes": "48x48",
       "type": "image/png"
     },
     {
-      "src": "/icon_36x36.9e0279d150440ea149c290bb6365d0da.png",
+      "src": "/v1/icon_36x36.9e0279d150440ea149c290bb6365d0da.png",
       "sizes": "36x36",
       "type": "image/png"
     },
     {
-      "src": "/icon_256x256.d7aa8498b277c94801117f038ee7367b.png",
+      "src": "/v1/icon_256x256.d7aa8498b277c94801117f038ee7367b.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "/icon_128x128.f3fbb95c0df05e332de910e8f17cfb97.png",
+      "src": "/v1/icon_128x128.f3fbb95c0df05e332de910e8f17cfb97.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/icon_96x96.767e73deeb7ffd09ae3bc309b6bd9f52.png",
+      "src": "/v1/icon_96x96.767e73deeb7ffd09ae3bc309b6bd9f52.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/icon_72x72.4b34cc5c7496e0017188db4636b1f4e0.png",
+      "src": "/v1/icon_72x72.4b34cc5c7496e0017188db4636b1f4e0.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "/icon_48x48.2b48cef4969c8cd5a8eb1e410711fedd.png",
+      "src": "/v1/icon_48x48.2b48cef4969c8cd5a8eb1e410711fedd.png",
       "sizes": "48x48",
       "type": "image/png"
     },
     {
-      "src": "/icon_36x36.9e0279d150440ea149c290bb6365d0da.png",
+      "src": "/v1/icon_36x36.9e0279d150440ea149c290bb6365d0da.png",
       "sizes": "36x36",
       "type": "image/png"
     }
@@ -95,7 +95,7 @@
   "short_name": "HDTV",
   "orientation": "portrait",
   "display": "standalone",
-  "start_url": "./",
+  "start_url": "/v1",
   "description": "HDTV, 高清, 快速, 简洁",
   "background_color": "#fff",
   "dir": "ltr",

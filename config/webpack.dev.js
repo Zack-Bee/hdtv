@@ -7,7 +7,7 @@ const config = merge(common, {
     output: {
         filename: "[name].js",
         path: path.resolve(__dirname, "../dist"),
-        publicPath: "/"
+        publicPath: "/v1"
     },
     devtool: "inline-source-map",
     devServer: {
