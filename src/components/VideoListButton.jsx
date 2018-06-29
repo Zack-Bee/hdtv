@@ -110,7 +110,7 @@ class VideoListButton extends React.Component {
         }
         fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
             res.json().then((list) => {
-                console.log(list)
+                // console.log(list)
                 this.setState({
                     videoList: list.reverse()
                 })
@@ -121,7 +121,7 @@ class VideoListButton extends React.Component {
     componentDidMount() {
         fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
             res.json().then((list) => {
-                console.log(list)
+                // console.log(list)
                 this.setState({
                     videoList: list.reverse()
                 })
@@ -134,7 +134,7 @@ class VideoListButton extends React.Component {
 
             fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
                 res.json().then((list) => {
-                    console.log(list)
+                    // console.log(list)
                     this.setState({
                         videoList: list.reverse()
                     })

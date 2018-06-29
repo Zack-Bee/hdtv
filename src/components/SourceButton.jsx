@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import config from "../../config/config"
 
 class SourceButton extends React.Component {
     constructor(props) {
@@ -45,7 +46,8 @@ class SourceButton extends React.Component {
                         this.props.sourceList.map((source) => (
                             <MenuItem key={source.path} onClick={() => {
                                 this.handleClose()
-                                this.props.setSource(source.name, source.path)
+                                this.props.setSource(source.name, source.path, 
+                                    config.host + source.thumbnails)
                             }}>
                                 {source.name}
                             </MenuItem>

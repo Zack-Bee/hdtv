@@ -35,7 +35,6 @@ const styles = {
 class PlayerPage extends React.Component {
     render() {
         const { classes, match } = this.props
-        console.log(match)
         return (
             <div className={classes.root}>
                 <AppBar position="static" classes={{ root: classes.appBar }}>
@@ -64,7 +63,7 @@ class PlayerPage extends React.Component {
                 <Player path={this.state.currentSourcePath}
                     title={this.state.title}
                     isLive={!Boolean(this.state.timeline)}
-                    thumbnails={this.state.thumbnails}/>
+                    thumbnails={this.state.currentSourceThumbnails}/>
                 />
             </div>
         )
@@ -76,10 +75,11 @@ class PlayerPage extends React.Component {
         })
     }
 
-    setSource(name, path) {
+    setSource(name, path, thumbnails) {
         this.setState({
             currentSourceName: name,
-            currentSourcePath: path
+            currentSourcePath: path,
+            currentSourceThumbnails: thumbnails
         })
     }
 
@@ -91,7 +91,7 @@ class PlayerPage extends React.Component {
             currentSourcePath: "",
             currentSourceName: "",
             timeline: "",
-            thumbnails: ""
+            currentSourceThumbnails: ""
         }
 
         this.setTitle = this.setTitle.bind(this)
@@ -104,14 +104,15 @@ class PlayerPage extends React.Component {
 
         fetch(`${config.sources}/${channel}/${timeline || ""}`).then((res) => {
             res.json().then((data) => {
-                console.log(data)
+                // console.log(data)
                 this.setTitle(data.title)
                 this.setState({
                     sourceList: data.sourceList,
                     currentSourceName: data.sourceList[0].name,
                     currentSourcePath: data.sourceList[0].path,
                     timeline,
-                    thumbnails: config.host + data.sourceList[0].thumbnails
+                    currentSourceThumbnails: 
+                        config.host + data.sourceList[0].thumbnails
                 })
             })
         })
@@ -127,14 +128,15 @@ class PlayerPage extends React.Component {
         }
         fetch(`${config.sources}/${channel}/${timeline || ""}`).then((res) => {
             res.json().then((data) => {
-                console.log(data)
+                // console.log(data)
                 this.setTitle(data.title)
                 this.setState({
                     sourceList: data.sourceList,
                     currentSourceName: data.sourceList[0].name,
                     currentSourcePath: data.sourceList[0].path,
                     timeline,
-                    thumbnails: config.host + data.sourceList[0].thumbnails
+                    currentSourceThumbnails: 
+                        config.host + data.sourceList[0].thumbnails
                 })
             })
         })

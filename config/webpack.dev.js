@@ -31,7 +31,9 @@ const config = merge(common, {
     devServer: {
         host: "0.0.0.0",
         open: true,
-        historyApiFallback: true
+        historyApiFallback: true,
+        publicPath: "/v1/",
+        openPage: "v1/"
     }
 })
 

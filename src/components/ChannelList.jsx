@@ -44,7 +44,7 @@ const styles = {
 
 const ChannelItem = (props) => {
     const { classes } = props
-    console.log("ChannelItem render")
+    // console.log("ChannelItem render")
     return (
         <Transition in={props.isShow} unmountOnExit timeout={300}>
             {(state) => (
@@ -95,7 +95,7 @@ const ChannelItemWidthStyles = withStyles(styles)(ChannelItem)
 class ChannelList extends React.Component {
     render() {
         let isHidePicture = this.props.isHidePicture
-        console.log(this.props.filter)
+        // console.log(this.props.filter)
         return (
             <div>
                 <style>

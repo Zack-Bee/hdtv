@@ -154,7 +154,7 @@ class MiniDrawer extends React.Component {
     }
 
     freshDetail() {
-        console.log("i will fresh")
+        // console.log("i will fresh")
         let channels = this.state.categoryList
 
         fetch(config.details).then((res) => {
@@ -206,7 +206,7 @@ class MiniDrawer extends React.Component {
         this.setState({
             categoryList: this.state.categoryList
         })
-        console.log(currentMap)
+        // console.log(currentMap)
     }
 
     getvideoMap(channels) {
@@ -219,10 +219,10 @@ class MiniDrawer extends React.Component {
             if (!storeSaveTime || !videoMap ||
                 (saveTime - Date.now() > 40 * 60 * 1000) ||
                 currentDate !== saveDate) {
-                console.log("get videoMap online")
+                // console.log("get videoMap online")
                 for (let i = 0, list = channels, len = list.length;
                     i < len; i++) {
-                    console.log(list[i])
+                    // console.log(list[i])
                     if (list[i].name === "所有频道") {
                         let fetchAllPromise = []
                         for (let j = 0;
@@ -249,7 +249,7 @@ class MiniDrawer extends React.Component {
                     }
                 }
             } else {
-                console.log("get videoMap from sessionStorage")
+                // console.log("get videoMap from sessionStorage")
                 resolve(JSON.parse(videoMap))
             }
         })
@@ -434,7 +434,7 @@ class MiniDrawer extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.props)
+        // console.log(this.props)
         fetch(config.channels).then((res) => {
             res.json().then((channels) => {
                 // 获取收藏的节目
@@ -442,9 +442,9 @@ class MiniDrawer extends React.Component {
                 if (!favoriteList) {
                     localStorage.setItem("favoriteList", JSON.stringify([]))
                     this.favoriteCategory = []
-                    console.log("not store")
+                    // console.log("not store")
                 } else {
-                    console.log("have store")
+                    // console.log("have store")
                     favoriteList = JSON.parse(favoriteList)
                     for (let i = 0, categoryList = channels,
                         len = categoryList.length; i < len; i++) {
@@ -461,7 +461,7 @@ class MiniDrawer extends React.Component {
                                     }
                                 }
                             })
-                            console.log(this.favoriteCategory)
+                            // console.log(this.favoriteCategory)
                             break
                         }
                     }
@@ -483,7 +483,7 @@ class MiniDrawer extends React.Component {
                                 list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
                             }
                         }
-                        console.log(channels)
+                        // console.log(channels)
 
                         this.setState({
                             categoryList: channels
@@ -496,13 +496,13 @@ class MiniDrawer extends React.Component {
                                 this.setState({
                                     currentChannelList: list[i].channelList
                                 })
-                                console.log(list[i])
+                                // console.log(list[i])
                                 break
                             }
                         }
 
                         this.getvideoMap(channels).then((videoMap) => {
-                            console.log(videoMap)
+                            // console.log(videoMap)
                             this.freshTitle(videoMap)
                         })
                     })
@@ -511,7 +511,7 @@ class MiniDrawer extends React.Component {
         })
 
         this.timer = setInterval(() => {
-            console.log("change")
+            // console.log("change")
             this.setState({
                 timestamp: Date.now()
             })
@@ -519,12 +519,12 @@ class MiniDrawer extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // console.log(prevProps, prevState)
+        // // console.log(prevProps, prevState)
         if (prevProps.category === this.props.category &&
             prevState.timestamp === this.state.timestamp) {
             return
         }
-        console.log(this.favoriteCategory)
+        // console.log(this.favoriteCategory)
         if (this.props.category === "我的收藏") {
             this.setState({
                 currentChannelList: this.favoriteCategory || []

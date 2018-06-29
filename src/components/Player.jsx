@@ -7,6 +7,7 @@ import swfHls from 'flowplayer/dist/flowplayerhls.swf'
 import "flowplayer/dist/skin/skin.css"
 import flowplayer from 'flowplayer'
 import thumbnails from "../plugins/flowplayer.thumbnails"
+import config from "../../config/config"
 
 window.Hls = Hls
 
@@ -107,7 +108,7 @@ class Player extends React.Component {
 
     componentWillUnmount() {
         // 卸载播放器
-        console.log("will unmount")
+        // console.log("will unmount")
         if (this.player.engine) {
             this.player.unload()
         }
@@ -129,10 +130,12 @@ class Player extends React.Component {
     
             this.player.shutdown()
         }
+        // thumbnails(flowplayer)
         this.player = loadNewVideo(this.playerNode, this.props.isLive,
             this.props.path, this.props.title, this.props.thumbnails)
-        console.log("did update")
-        console.log("path: ", this.props.path)
+        // console.log("did update")
+        // console.log("path: ", this.props.path)
+        // console.log("thumbnails: ", this.props.thumbnails)
     }
 }
 
