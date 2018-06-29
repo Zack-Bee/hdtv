@@ -4,7 +4,7 @@
 * 支持节目直播
 * 支持视频略缩图
 * 支持收藏节目
-* 兼容流行浏览器
+* 兼容主流浏览器
 
 ### 配置自己的hdtv
 1. 下载代码到本地
@@ -17,7 +17,7 @@ cd hdtv
 
 将config/config.js中的相关配置改成适合于自己服务器的配置,
 修改src/index.html中的title, config/webpack.common.js中manifest插件相关配置
-(服务器的api示例在[api.md]中(https://github.com/Zack-Bee/hdtv/blob/master/api.md))
+(服务器的api示例在[api.md](https://github.com/Zack-Bee/hdtv/blob/master/api.md))中
 
 3. 打包生成代码
 
