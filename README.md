@@ -17,6 +17,7 @@ cd hdtv
 
 将config/config.js中的相关配置改成适合于自己服务器的配置,
 修改src/index.html中的title, config/webpack.common.js中manifest插件相关配置
+(服务器的api示例在[api.md]中(https://github.com/Zack-Bee/hdtv/blob/master/api.md))
 
 3. 打包生成代码
 
