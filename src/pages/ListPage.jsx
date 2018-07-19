@@ -415,7 +415,7 @@ class MiniDrawer extends React.Component {
                                     FAQ
                                 </Typography>
                                 </a>
-                                <a href="https://hdtv.neu6.edu.cn">
+                                <a href="https://hdtv.neu6.edu.cn/index.html">
                                 <Typography variant="subheading" color="inherit">
                                     旧版HDTV
                                 </Typography>
