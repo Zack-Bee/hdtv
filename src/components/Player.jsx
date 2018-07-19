@@ -109,8 +109,9 @@ class Player extends React.Component {
     componentWillUnmount() {
         // 卸载播放器
         // console.log("will unmount")
-        if (this.player.engine) {
-            this.player.unload()
+        let hlsEngine = flowplayer.engine('hlsjs-lite')
+        if (hlsEngine && hlsEngine.hls) {
+            hlsEngine.hls.stopLoad();
         }
 
         this.player.shutdown()
