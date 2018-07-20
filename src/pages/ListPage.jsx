@@ -146,6 +146,7 @@ class MiniDrawer extends React.Component {
     }
 
     setIsHidePicture(isHidePicture) {
+        localStorage.setItem("isHidePicture", JSON.stringify(isHidePicture))
         this.setState({ isHidePicture })
     }
 
@@ -435,6 +436,19 @@ class MiniDrawer extends React.Component {
 
     componentDidMount() {
         // console.log(this.props)
+        let isHidePicture = localStorage.getItem("isHidePicture")
+
+        if (isHidePicture) {
+            isHidePicture = JSON.parse(isHidePicture)
+        } else {
+            isHidePicture = false
+            localStorage.setItem("isHidePicture", JSON.stringify(false))
+        }
+
+        this.setState({
+            isHidePicture
+        })
+
         fetch(config.channels).then((res) => {
             res.json().then((channels) => {
                 // 获取收藏的节目
