@@ -43,11 +43,11 @@ class SourceButton extends React.Component {
                     onClose={this.handleClose}
                 >
                     {
-                        this.props.sourceList.map((source) => (
+                        this.props.sourceList.map((source, index) => (
                             <MenuItem key={source.path} onClick={() => {
                                 this.handleClose()
                                 this.props.setSource(source.name, source.path, 
-                                    config.host + source.thumbnails)
+                                    config.host + source.thumbnails, index)
                             }}>
                                 {source.name}
                             </MenuItem>
