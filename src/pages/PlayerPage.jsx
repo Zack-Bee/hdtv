@@ -12,6 +12,7 @@ import Player from "../components/Player.jsx"
 import VideoListButton from "../components/VideoListButton.jsx"
 import FavoriteButton from "../components/FavoriteButton.jsx"
 import SourceButton from "../components/SourceButton.jsx"
+import RatioButton from "../components/RatioButton.jsx"
 import config from "../../config/config"
 
 const styles = {
@@ -59,6 +60,9 @@ class PlayerPage extends React.Component {
                         <FavoriteButton channel={match.params.channel}/>
                         <VideoListButton color="inherit" 
                             channel={match.params.channel}/>
+                        <RatioButton ratio={this.state.ratio}
+                            setRatio={this.setRatio}
+                            applyRatio={this.applyRatio}/>
                     </Toolbar>
                 </AppBar>
                 <Player path={this.state.currentSourcePath}
@@ -66,7 +70,9 @@ class PlayerPage extends React.Component {
                     isLive={!Boolean(this.state.timeline)}
                     thumbnails={this.state.currentSourceThumbnails}
                     channel={this.state.channel}
-                    timeline={this.state.timeline}/>
+                    timeline={this.state.timeline}
+                    applyRatio={this.applyRatio}
+                    setRatio={this.setRatio}/>
                 />
             </div>
         )
@@ -88,6 +94,75 @@ class PlayerPage extends React.Component {
         console.log(savedInfo)
     }
 
+    setRatio(ratio) {
+        this.setState({ratio}, this.applyRatio)
+    }
+
+    applyRatio(isFullScreen) {
+        const container = document.getElementById("player"),
+            player = document.querySelector(".fp-player")
+        if (!player) {
+            return
+        }
+        console.log(container.clientHeight, container.clientWidth)
+        localStorage.setItem("ratio", this.state.ratio)
+        switch (this.state.ratio) {
+            case "自动":{
+                player.querySelector("video").style["object-fit"] = ""
+                Object.assign(player.style, {
+                    "margin": null,
+                    "height": null,
+                    "width": null
+                })
+                break
+            }
+            case "铺满":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "height": "100%",
+                    "width": "100%",
+                    "margin": "0"
+                })
+                break
+            }
+            case "16:9":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 9 * 16) / 2}px`,
+                    "height": "100%",
+                    "width": player.clientHeight / 9 * 16 + "px"
+                })
+                break
+            }
+            case "4:3":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 3 * 4) / 2}px`,
+                    "height": "100%",
+                    "width": player.clientHeight / 3 * 4 + "px"
+                })
+                break
+            }
+            case "3:2":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 2 * 3) / 2}px`,
+                    "height": "100%",
+                    "width": player.clientHeight / 2 * 3 + "px"
+                })
+                break
+            }
+            default :{
+                player.querySelector("video").style["object-fit"] = "none"
+                Object.assign(player.style, {
+                    "margin": "",
+                    "height": "",
+                    "width": ""
+                })
+            }
+        }
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -98,10 +173,13 @@ class PlayerPage extends React.Component {
             currentSourceThumbnails: "",
             currentSourceIndex: "",
             timeline: "",
-            channel: ""
+            channel: "",
+            ratio: ""
         }
 
         this.setSource = this.setSource.bind(this)
+        this.setRatio = this.setRatio.bind(this)
+        this.applyRatio = this.applyRatio.bind(this)
     }
 
     componentDidMount() {
@@ -133,7 +211,7 @@ class PlayerPage extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         let channel = this.props.match.params.channel,
             timeline = this.props.match.params.timeline,
             prevChannel = prevProps.match.params.channel,
@@ -165,6 +243,11 @@ class PlayerPage extends React.Component {
                 })
             })
         })
+
+        // 存储state
+        if (this.state.ratio !== prevState.ratio) {
+            localStorage.setItem("ratio", this.state.ratio)
+        }
     }
 }
 

@@ -105,15 +105,15 @@ class Player extends React.Component {
             <React.Fragment>
                 <style>
                     {`
-                    #player .fp-color {
+                    #playerContainer .fp-color {
                         background-color: ${blue[500]};
                     }
-                    #player .fp-bar, #player .fp-volumebar {
+                    #playerContainer .fp-bar, #playerContainer .fp-volumebar {
                         cursor: pointer;
                     }
                     `}
                 </style>
-                <div id="player" ref={(ref) => { this.playerNode = ref }}
+                <div id="playerContainer" ref={(ref) => { this.playerNode = ref }}
                     className={`${this.props.classes.player}`} />
                 <Dialog
                     open={this.state.isDialogOpen}
@@ -195,6 +195,17 @@ class Player extends React.Component {
             }
         })
 
+        // 设置长宽比
+        console.log("update")
+        let ratio = localStorage.getItem("ratio")
+        if (ratio) {
+            this.props.setRatio(ratio)
+        } else {
+            localStorage.setItem("ratio", "自动")
+            this.props.setRatio("自动")
+            localStorage.setItem("自动")
+        }
+
         clearInterval(this.timer)
 
         // 如果是回看节目, 记录timeline
@@ -207,6 +218,16 @@ class Player extends React.Component {
                 localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
             }, 10 * 1000)
         }
+
+        console.log(this.player)
+        this.player.on("fullscreen", () => {
+            console.log("full")
+            this.props.applyRatio(true)
+        })
+        this.player.on("fullscreen-exit", () => {
+            console.log("full")
+            this.props.applyRatio()
+        })
     }
 
     closeDialog() {
