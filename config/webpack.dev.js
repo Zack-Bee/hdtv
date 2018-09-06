@@ -29,9 +29,11 @@ const config = merge(common, {
         }]
     },
     devServer: {
-        host: "0.0.0.0",
+        host: "127.0.0.1",
         open: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+            index: "/v1/index.html"
+        },
         publicPath: "/v1/",
         openPage: "v1/"
     }
