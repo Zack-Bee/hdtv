@@ -61,8 +61,7 @@ class PlayerPage extends React.Component {
                         <VideoListButton color="inherit" 
                             channel={match.params.channel}/>
                         <RatioButton ratio={this.state.ratio}
-                            setRatio={this.setRatio}
-                            applyRatio={this.applyRatio}/>
+                            setRatio={this.setRatio}/>
                     </Toolbar>
                 </AppBar>
                 <Player path={this.state.currentSourcePath}
@@ -71,8 +70,7 @@ class PlayerPage extends React.Component {
                     thumbnails={this.state.currentSourceThumbnails}
                     channel={this.state.channel}
                     timeline={this.state.timeline}
-                    applyRatio={this.applyRatio}
-                    setRatio={this.setRatio}/>
+                    ratio={this.state.ratio}/>
                 />
             </div>
         )
@@ -95,72 +93,7 @@ class PlayerPage extends React.Component {
     }
 
     setRatio(ratio) {
-        this.setState({ratio}, this.applyRatio)
-    }
-
-    applyRatio(isFullScreen) {
-        const container = document.getElementById("player"),
-            player = document.querySelector(".fp-player")
-        if (!player) {
-            return
-        }
-        // console.log(container.clientHeight, container.clientWidth)
-        localStorage.setItem("ratio", this.state.ratio)
-        switch (this.state.ratio) {
-            case "自动":{
-                player.querySelector("video").style["object-fit"] = ""
-                Object.assign(player.style, {
-                    "margin": null,
-                    "height": null,
-                    "width": null
-                })
-                break
-            }
-            case "铺满":{
-                player.querySelector("video").style["object-fit"] = "fill"
-                Object.assign(player.style, {
-                    "height": "100%",
-                    "width": "100%",
-                    "margin": "0"
-                })
-                break
-            }
-            case "16:9":{
-                player.querySelector("video").style["object-fit"] = "fill"
-                Object.assign(player.style, {
-                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 9 * 16) / 2}px`,
-                    "height": "100%",
-                    "width": player.clientHeight / 9 * 16 + "px"
-                })
-                break
-            }
-            case "4:3":{
-                player.querySelector("video").style["object-fit"] = "fill"
-                Object.assign(player.style, {
-                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 3 * 4) / 2}px`,
-                    "height": "100%",
-                    "width": player.clientHeight / 3 * 4 + "px"
-                })
-                break
-            }
-            case "3:2":{
-                player.querySelector("video").style["object-fit"] = "fill"
-                Object.assign(player.style, {
-                    "margin-left": isFullScreen ? 0 : `${(container.clientWidth - player.clientHeight / 2 * 3) / 2}px`,
-                    "height": "100%",
-                    "width": player.clientHeight / 2 * 3 + "px"
-                })
-                break
-            }
-            default :{
-                player.querySelector("video").style["object-fit"] = "none"
-                Object.assign(player.style, {
-                    "margin": "",
-                    "height": "",
-                    "width": ""
-                })
-            }
-        }
+        this.setState({ratio})
     }
 
     constructor(props) {
@@ -179,7 +112,6 @@ class PlayerPage extends React.Component {
 
         this.setSource = this.setSource.bind(this)
         this.setRatio = this.setRatio.bind(this)
-        this.applyRatio = this.applyRatio.bind(this)
     }
 
     componentDidMount() {
@@ -193,6 +125,8 @@ class PlayerPage extends React.Component {
                 index = savedInfo.index
             }
         }
+
+        // 获取数据
         fetch(`${config.sources}/${channel}/${timeline || ""}`).then((res) => {
             res.json().then((data) => {
                 // console.log(data)
@@ -209,6 +143,18 @@ class PlayerPage extends React.Component {
                 })
             })
         })
+
+        let ratio = localStorage.getItem("ratio")
+        console.log(ratio)
+        console.log(typeof ratio)
+        if (ratio) {
+            this.setState({ratio})
+            console.log(1)
+        } else {
+            console.log(2)
+            this.setState({ratio: "自动"})
+            localStorage.setItem("ratio", "自动")
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {

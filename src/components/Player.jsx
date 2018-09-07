@@ -158,20 +158,18 @@ class Player extends React.Component {
         let hlsEngine = flowplayer.engine('hlsjs-lite')
 
         if (hlsEngine && hlsEngine.hls) {
-            console.log(1)
+            console.log("hls stopLoad")
             hlsEngine.hls.stopLoad();
         }
-        // console.log(Hls)
-        // console.log(this.player)
-        // console.log(hlsEngine, hlsEngine.hls)
-        // this.player.shutdown()
-        // console.log(this.player)
 
         // 停止interval
         clearInterval(this.timer)
     }
 
     componentDidUpdate(prevProps) {
+        if (prevProps.ratio !== this.props.ratio) {
+            this.applyRatio(this.props.ratio)
+        }
         if (!this.props.path) {
             return
         }
@@ -199,18 +197,8 @@ class Player extends React.Component {
                     }
                 }
             }
+            this.applyRatio(this.props.ratio)
         })
-
-        // 设置长宽比
-        console.log("update")
-        let ratio = localStorage.getItem("ratio")
-        if (ratio) {
-            this.props.setRatio(ratio)
-        } else {
-            localStorage.setItem("ratio", "自动")
-            this.props.setRatio("自动")
-            localStorage.setItem("自动")
-        }
 
         clearInterval(this.timer)
 
@@ -224,16 +212,6 @@ class Player extends React.Component {
                 localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
             }, 10 * 1000)
         }
-
-        // console.log(this.player)
-        this.player.on("fullscreen", () => {
-            // console.log("full")
-            this.props.applyRatio(true)
-        })
-        this.player.on("fullscreen-exit", () => {
-            // console.log("full")
-            this.props.applyRatio()
-        })
     }
 
     closeDialog() {
@@ -247,6 +225,80 @@ class Player extends React.Component {
             this.player.seek(this.savedInfo.time)
         }
         this.closeDialog()
+    }
+
+    applyRatio(ratio) {
+        const player = document.querySelector(".fp-player")
+        if (!player) {
+            return
+        }
+        // console.log(container.clientHeight, container.clientWidth)
+        localStorage.setItem("ratio", ratio)
+        switch (ratio) {
+            case "自动":{
+                player.querySelector("video").style["object-fit"] = ""
+                Object.assign(player.style, {
+                    "margin": null,
+                    "height": null,
+                    "width": null,
+                    "left": null,
+                    "right": null
+                })
+                break
+            }
+            case "铺满":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "height": "100%",
+                    "width": "100%",
+                    "margin": "0 auto"
+                })
+                break
+            }
+            case "16:9":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin": "0 auto",
+                    "left": 0,
+                    "right": 0,
+                    "height": "100%",
+                    "width": player.clientHeight / 9 * 16 + "px"
+                })
+                break
+            }
+            case "4:3":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin": "0 auto",
+                    "left": 0,
+                    "right": 0,
+                    "height": "100%",
+                    "width": player.clientHeight / 3 * 4 + "px"
+                })
+                break
+            }
+            case "3:2":{
+                player.querySelector("video").style["object-fit"] = "fill"
+                Object.assign(player.style, {
+                    "margin": "0 auto",
+                    "left": 0,
+                    "right": 0,
+                    "height": "100%",
+                    "width": player.clientHeight / 2 * 3 + "px"
+                })
+                break
+            }
+            default :{
+                player.querySelector("video").style["object-fit"] = ""
+                Object.assign(player.style, {
+                    "margin": null,
+                    "height": null,
+                    "width": null,
+                    "left": null,
+                    "right": null
+                })
+            }
+        }
     }
 }
 
