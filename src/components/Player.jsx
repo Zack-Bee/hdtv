@@ -98,6 +98,7 @@ class Player extends React.Component {
 
         this.closeDialog = this.closeDialog.bind(this)
         this.continuePlayProcess = this.continuePlayProcess.bind(this)
+        this.keyupHandler = this.keyupHandler.bind(this)
     }
 
     render() {
@@ -114,7 +115,7 @@ class Player extends React.Component {
                     `}
                 </style>
                 <div id="playerContainer" ref={(ref) => { this.playerNode = ref }}
-                    className={`${this.props.classes.player}`} />
+                    className={`${this.props.classes.player} fp-mute`} />
                 <Dialog
                     open={this.state.isDialogOpen}
                     TransitionComponent={Slide}
@@ -144,7 +145,15 @@ class Player extends React.Component {
         )
     }
 
+    componentDidMount() {
+        console.log("mount")
+        document.addEventListener("keyup", this.keyupHandler)
+    }
+
     componentWillUnmount() {
+
+        // 停止监听键盘事件
+        document.removeEventListener("keyup", this.keyupHandler)
 
         // 返回主页前存储信息
         let newInfo = Object.assign({}, this.savedInfo, {
@@ -297,6 +306,48 @@ class Player extends React.Component {
                     "left": null,
                     "right": null
                 })
+            }
+        }
+    }
+
+    keyupHandler(event) {
+        if (!this.player) {
+            return
+        }
+        console.log(event.key)
+        let volume = JSON.parse(localStorage.getItem("volume"))
+        console.log(volume)
+        switch (event.key) {
+            case "ArrowUp": {
+                if (volume === null) {
+                    this.player.volume(1)
+                    localStorage.setItem("volume", 1)
+                } else {
+                    volume = Math.min(1, Number(volume) + 0.1)
+                    this.player.volume(volume)
+                }
+                break
+            }
+            case "ArrowDown": {
+                if (volume === null) {
+                    this.player.volume(0.9)
+                } else {
+                    volume = Math.max(0, volume - 0.1)
+                    this.player.volume(volume)
+                }
+                break
+            }
+            case "ArrowLeft": {
+                this.player.seek(false)
+                break
+            }
+            case "ArrowRight": {
+                this.player.seek(true)
+                break
+            }
+            case " ": {
+                this.player.toggle()
+                break
             }
         }
     }
