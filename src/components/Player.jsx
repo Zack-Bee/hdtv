@@ -156,10 +156,16 @@ class Player extends React.Component {
         // 卸载播放器
         console.log("player will unmount")
         let hlsEngine = flowplayer.engine('hlsjs-lite')
+
         if (hlsEngine && hlsEngine.hls) {
+            console.log(1)
             hlsEngine.hls.stopLoad();
         }
-        this.player.shutdown()
+        // console.log(Hls)
+        // console.log(this.player)
+        // console.log(hlsEngine, hlsEngine.hls)
+        // this.player.shutdown()
+        // console.log(this.player)
 
         // 停止interval
         clearInterval(this.timer)
@@ -219,13 +225,13 @@ class Player extends React.Component {
             }, 10 * 1000)
         }
 
-        console.log(this.player)
+        // console.log(this.player)
         this.player.on("fullscreen", () => {
-            console.log("full")
+            // console.log("full")
             this.props.applyRatio(true)
         })
         this.player.on("fullscreen-exit", () => {
-            console.log("full")
+            // console.log("full")
             this.props.applyRatio()
         })
     }

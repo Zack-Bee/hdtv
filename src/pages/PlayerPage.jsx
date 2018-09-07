@@ -91,7 +91,7 @@ class PlayerPage extends React.Component {
         localStorage.setItem(channel, JSON.stringify(Object.assign({}, savedInfo, {
             index
         })))
-        console.log(savedInfo)
+        // console.log(savedInfo)
     }
 
     setRatio(ratio) {
@@ -104,7 +104,7 @@ class PlayerPage extends React.Component {
         if (!player) {
             return
         }
-        console.log(container.clientHeight, container.clientWidth)
+        // console.log(container.clientHeight, container.clientWidth)
         localStorage.setItem("ratio", this.state.ratio)
         switch (this.state.ratio) {
             case "自动":{
