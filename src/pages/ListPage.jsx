@@ -225,7 +225,6 @@ class MiniDrawer extends React.Component {
                                         沈航媒体服务
                                     </Typography>
                                 </a>
-
                                 <a href="http://tv6.ustc.edu.cn/">
                                     <Typography variant="subheading" color="inherit">
                                         中国科大电视直播
@@ -265,23 +264,23 @@ class MiniDrawer extends React.Component {
                                     </Typography>
                                 </a>
                                 <a href="https://hdtv.neu6.edu.cn/thx">
-                                <Typography variant="headline" paragraph color="inherit">
-                                    鸣谢
+                                    <Typography variant="headline" paragraph color="inherit">
+                                        鸣谢
                                 </Typography>
                                 </a>
                                 <a href="https://hdtv.neu6.edu.cn/faq">
-                                <Typography variant="headline" paragraph color="inherit">
-                                    FAQ
+                                    <Typography variant="headline" paragraph color="inherit">
+                                        FAQ
                                 </Typography>
                                 </a>
                                 <a href="https://hdtv.neu6.edu.cn/index.html">
-                                <Typography variant="subheading" color="inherit">
-                                    旧版HDTV
+                                    <Typography variant="subheading" color="inherit">
+                                        旧版HDTV
                                 </Typography>
                                 </a>
                                 <a href="https://hdtv.neu6.edu.cn/soft/neutv.apk">
-                                <Typography variant="subheading" color="inherit">
-                                    安卓客户端
+                                    <Typography variant="subheading" color="inherit">
+                                        安卓客户端
                                 </Typography>
                                 </a>
                             </Grid>
@@ -290,6 +289,79 @@ class MiniDrawer extends React.Component {
                 </main>
             </div>
         )
+    }
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            open: false,
+            category: this.props.category,
+            search: "",
+            isHidePicture: false,
+            currentChannelList: [],
+            categoryList: [],
+            timestamp: Date.now(),
+            filter: ""
+        }
+        this.closeDrawer = this.closeDrawer.bind(this)
+        this.openDrawer = this.openDrawer.bind(this)
+        this.setCategory = this.setCategory.bind(this)
+        this.setIsHidePicture = this.setIsHidePicture.bind(this)
+        this.setFilter = this.setFilter.bind(this)
+        this.freshTitle = this.freshTitle.bind(this)
+        this.freshDetail = this.freshDetail.bind(this)
+    }
+
+    componentDidMount() {
+        // console.log(this.props)
+        let isHidePicture = localStorage.getItem("isHidePicture")
+
+        if (isHidePicture) {
+            isHidePicture = JSON.parse(isHidePicture)
+        } else {
+            isHidePicture = false
+            localStorage.setItem("isHidePicture", JSON.stringify(false))
+        }
+
+        this.setState({
+            isHidePicture
+        })
+
+        fetch(config.channels).then((res) => {
+            res.json().then((channels) => {
+                this.freshFavoriteListInfo(channels)
+                this.setState({
+                    categoryList: channels
+                }, () => {
+                    this.freshDetail()
+                    this.getVideoMap(channels).then(this.freshTitle)
+                })
+
+                this.applySelectCategory()
+            })
+        })
+
+        // 周期性更新信息
+        this.timer = setInterval(() => {
+            // console.log("change")
+            this.setState({
+                timestamp: Date.now()
+            })
+            this.freshDetail()
+            this.getVideoMap(this.state.categoryList).then(this.freshTitle)
+        }, 1000 * 120)
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.category === this.props.category) {
+            return
+        }
+
+        this.applySelectCategory()
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer)
     }
 
     // 打开侧面导航栏
@@ -376,6 +448,7 @@ class MiniDrawer extends React.Component {
     }
 
     freshFavoriteListInfo(channels) {
+
         // 获取收藏的节目
         let favoriteList = localStorage.getItem("favoriteList")
         if (!favoriteList) {
@@ -474,77 +547,6 @@ class MiniDrawer extends React.Component {
                 return
             }
         }
-    }
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            open: false,
-            category: this.props.category,
-            search: "",
-            isHidePicture: false,
-            currentChannelList: [],
-            categoryList: [],
-            timestamp: Date.now(),
-            filter: ""
-        }
-        this.closeDrawer = this.closeDrawer.bind(this)
-        this.openDrawer = this.openDrawer.bind(this)
-        this.setCategory = this.setCategory.bind(this)
-        this.setIsHidePicture = this.setIsHidePicture.bind(this)
-        this.setFilter = this.setFilter.bind(this)
-        this.freshTitle = this.freshTitle.bind(this)
-        this.freshDetail = this.freshDetail.bind(this)
-    }
-
-    componentDidMount() {
-        // console.log(this.props)
-        let isHidePicture = localStorage.getItem("isHidePicture")
-
-        if (isHidePicture) {
-            isHidePicture = JSON.parse(isHidePicture)
-        } else {
-            isHidePicture = false
-            localStorage.setItem("isHidePicture", JSON.stringify(false))
-        }
-
-        this.setState({
-            isHidePicture
-        })
-
-        fetch(config.channels).then((res) => {
-            res.json().then((channels) => {
-                this.freshFavoriteListInfo(channels)
-                this.setState({
-                    categoryList: channels
-                }, () => {
-                    this.freshDetail()
-                    this.getVideoMap(channels).then(this.freshTitle)
-                })
-
-                this.applySelectCategory()
-            })
-        })
-
-        // 周期性更新信息
-        this.timer = setInterval(() => {
-            // console.log("change")
-            this.setState({
-                timestamp: Date.now()
-            })
-        }, 1000 * 120)
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.category === this.props.category) {
-            return
-        }
-
-        this.applySelectCategory()
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timer)
     }
 }
 

@@ -76,26 +76,6 @@ class PlayerPage extends React.Component {
         )
     }
 
-    setSource(name, path, thumbnails, index) {
-        this.setState({
-            currentSourceName: name,
-            currentSourcePath: path,
-            currentSourceThumbnails: thumbnails,
-            currentSourceIndex: index
-        })
-        let channel = this.props.match.params.channel,
-            savedInfo = JSON.parse(localStorage.getItem(channel))
-        savedInfo = savedInfo ? savedInfo : {}
-        localStorage.setItem(channel, JSON.stringify(Object.assign({}, savedInfo, {
-            index
-        })))
-        // console.log(savedInfo)
-    }
-
-    setRatio(ratio) {
-        this.setState({ratio})
-    }
-
     constructor(props) {
         super(props)
         this.state = {
@@ -144,14 +124,11 @@ class PlayerPage extends React.Component {
             })
         })
 
+        // 设置视频比例
         let ratio = localStorage.getItem("ratio")
-        console.log(ratio)
-        console.log(typeof ratio)
         if (ratio) {
             this.setState({ratio})
-            console.log(1)
         } else {
-            console.log(2)
             this.setState({ratio: "自动"})
             localStorage.setItem("ratio", "自动")
         }
@@ -166,6 +143,7 @@ class PlayerPage extends React.Component {
             return
         }
 
+        // 从存储中获得播放源的index
         let savedInfo = JSON.parse(localStorage.getItem(channel)),
             index = 0
         if (savedInfo) {
@@ -184,7 +162,7 @@ class PlayerPage extends React.Component {
                     currentSourcePath: data.sourceList[index].path,
                     timeline,
                     channel,
-                    currentSourceThumbnails: 
+                    currentSourceThumbnails:
                         config.host + data.sourceList[index].thumbnails
                 })
             })
@@ -194,6 +172,27 @@ class PlayerPage extends React.Component {
         if (this.state.ratio !== prevState.ratio) {
             localStorage.setItem("ratio", this.state.ratio)
         }
+    }
+
+    // 设置选择的节目源并存储
+    setSource(name, path, thumbnails, index) {
+        this.setState({
+            currentSourceName: name,
+            currentSourcePath: path,
+            currentSourceThumbnails: thumbnails,
+            currentSourceIndex: index
+        })
+        let channel = this.props.match.params.channel,
+            savedInfo = JSON.parse(localStorage.getItem(channel))
+        savedInfo = savedInfo ? savedInfo : {}
+        localStorage.setItem(channel, JSON.stringify(Object.assign({}, savedInfo, {
+            index
+        })))
+        // console.log(savedInfo)
+    }
+
+    setRatio(ratio) {
+        this.setState({ratio})
     }
 }
 
