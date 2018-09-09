@@ -58,7 +58,7 @@ const ChannelItem = (props) => {
                                     <CardMedia
                                         className={classes.media}
                                         image={`${config.host}${props.imageSrc}?${props.cacheNum}`}
-                                        title={props.name}
+                                        title={props.name ? props.name : "正在加载"}
                                     />
                                 </Collapse>
                                 <CardContent classes={{ root: classes.content }}>
@@ -77,7 +77,7 @@ const ChannelItem = (props) => {
                                             height: "16px"
                                         }}>
                                             <PeopleIcon classes={{ root: classes.icon }} />
-                                            <span>{props.viewerNum}</span>
+                                            <span>{props.viewerNum ? props.viewerNum : 0}</span>
                                         </div>
                                     </div>
                                     <div style={{ color: grey[700] }}>{props.title}</div>

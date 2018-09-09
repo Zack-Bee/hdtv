@@ -114,148 +114,6 @@ const styles = (theme) => ({
 })
 
 class MiniDrawer extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            open: false,
-            category: this.props.category,
-            search: "",
-            isHidePicture: false,
-            currentChannelList: [],
-            categoryList: [],
-            timestamp: Date.now(),
-            filter: ""
-        }
-        this.closeDrawer = this.closeDrawer.bind(this)
-        this.openDrawer = this.openDrawer.bind(this)
-        this.setCategory = this.setCategory.bind(this)
-        this.setIsHidePicture = this.setIsHidePicture.bind(this)
-        this.setFilter = this.setFilter.bind(this)
-    }
-
-    openDrawer() {
-        this.setState({ open: true })
-    }
-
-    closeDrawer() {
-        this.setState({ open: false })
-    }
-
-    setCategory(category) {
-        this.setState({ category })
-    }
-
-    setIsHidePicture(isHidePicture) {
-        localStorage.setItem("isHidePicture", JSON.stringify(isHidePicture))
-        this.setState({ isHidePicture })
-    }
-
-    setFilter(filter) {
-        this.setState({ filter })
-    }
-
-    freshDetail() {
-        // console.log("i will fresh")
-        let channels = this.state.categoryList
-
-        fetch(config.details).then((res) => {
-            res.json().then((details) => {
-                let detailsMap = {}
-
-                // 使用map存储, 将修改的复杂度从O(m * n)降低到O(m + n)
-                for (let i of details) {
-                    detailsMap[i.channelId] = i
-                }
-                for (let i = 0, len1 = channels.length;
-                    i < len1; i++) {
-                    for (let j = 0, list = channels[i].channelList,
-                        len2 = list.length; j < len2; j++) {
-                        list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
-                    }
-                }
-
-                this.setState({
-                    categoryList: channels
-                })
-            })
-        })
-
-        this.setState({
-            timestamp: Date.now()
-        })
-    }
-
-    freshTitle(videoMap) {
-        let currentMap = {},
-            now = Math.floor(Date.now() / 1000)
-        for (let i in videoMap) {
-            for (let j = 0, len = videoMap[i].length; j < len; j++) {
-                if ((now <= videoMap[i][j].endTime) &&
-                    (now >= videoMap[i][j].startTime)) {
-                    currentMap[i] = videoMap[i][j].title
-                    break
-                }
-            }
-        }
-        for (let i = 0, categoryList = this.state.categoryList;
-            i < categoryList.length; i++) {
-            for (let j = 0; j < categoryList[i].channelList.length; j++) {
-                let channel = categoryList[i].channelList[j]
-                channel.title = currentMap[channel.channelId] || " "
-            }
-        }
-        this.setState({
-            categoryList: this.state.categoryList
-        })
-        // console.log(currentMap)
-    }
-
-    getvideoMap(channels) {
-        return new Promise((resolve) => {
-            let storeSaveTime = sessionStorage.getItem("saveTime"),
-                saveTime = Number(storeSaveTime),
-                saveDate = new Date(saveTime).getDate(),
-                currentDate = new Date().getDate(),
-                videoMap = sessionStorage.getItem("videoMap")
-            if (!storeSaveTime || !videoMap ||
-                (saveTime - Date.now() > 40 * 60 * 1000) ||
-                currentDate !== saveDate) {
-                // console.log("get videoMap online")
-                for (let i = 0, list = channels, len = list.length;
-                    i < len; i++) {
-                    // console.log(list[i])
-                    if (list[i].name === "所有频道") {
-                        let fetchAllPromise = []
-                        for (let j = 0;
-                            j < list[i].channelList.length;
-                            j++) {
-                            let channelId = list[i].channelList[j].channelId
-                            fetchAllPromise.push(
-                                fetchPromise(
-                                    `${config.list}/${channelId}/1`,
-                                    list[i].channelList[j].channelId
-                                )
-                            )
-                        }
-                        let allVideo = {}
-                        Promise.all(fetchAllPromise).then((list) => {
-                            list.forEach((info) => {
-                                allVideo[info.id] = info.list
-                            })
-                            sessionStorage.setItem("saveTime", Date.now())
-                            sessionStorage.setItem("videoMap",
-                                JSON.stringify(allVideo))
-                            resolve(allVideo)
-                        })
-                    }
-                }
-            } else {
-                // console.log("get videoMap from sessionStorage")
-                resolve(JSON.parse(videoMap))
-            }
-        })
-    }
-
     render() {
         const { classes, theme } = this.props
 
@@ -434,6 +292,211 @@ class MiniDrawer extends React.Component {
         )
     }
 
+    // 打开侧面导航栏
+    openDrawer() {
+        this.setState({ open: true })
+    }
+
+    // 关闭侧面导航栏
+    closeDrawer() {
+        this.setState({ open: false })
+    }
+
+    // 设置分类
+    setCategory(category) {
+        this.setState({ category })
+    }
+
+    // 设置是否隐藏图片
+    setIsHidePicture(isHidePicture) {
+        localStorage.setItem("isHidePicture", JSON.stringify(isHidePicture))
+        this.setState({ isHidePicture })
+    }
+
+    // 设置筛选节目的filter
+    setFilter(filter) {
+        this.setState({ filter })
+    }
+
+    // 获取节目观看人数等详细信息
+    freshDetail() {
+        let channels = this.state.categoryList
+        fetch(config.details).then((res) => {
+            res.json().then((details) => {
+                let detailsMap = {}
+
+                // 使用map存储, 将查找修改的复杂度从O(n^2)降低到O(n)
+                for (let i of details) {
+                    detailsMap[i.channelId] = i
+                }
+                for (let i = 0, len1 = channels.length;
+                    i < len1; i++) {
+                    for (let j = 0, list = channels[i].channelList,
+                        len2 = list.length; j < len2; j++) {
+                        list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
+                    }
+                }
+
+                this.setState({
+                    categoryList: channels
+                })
+            })
+        })
+
+        this.setState({
+            timestamp: Date.now()
+        })
+    }
+
+    // 根据节目单刷新标题
+    freshTitle(videoMap) {
+        let currentMap = {},
+            now = Math.floor(Date.now() / 1000)
+
+        // 根据节目单map得到当前播放的节目的名称
+        for (let i in videoMap) {
+            for (let j = 0, len = videoMap[i].length; j < len; j++) {
+                if ((now <= videoMap[i][j].endTime) &&
+                    (now >= videoMap[i][j].startTime)) {
+                    currentMap[i] = videoMap[i][j].title
+                    break
+                }
+            }
+        }
+        for (let i = 0, categoryList = this.state.categoryList;
+            i < categoryList.length; i++) {
+            for (let j = 0; j < categoryList[i].channelList.length; j++) {
+                let channel = categoryList[i].channelList[j]
+                channel.title = currentMap[channel.channelId] || " "
+            }
+        }
+        this.setState({
+            categoryList: this.state.categoryList
+        })
+    }
+
+    freshFavoriteListInfo(channels) {
+        // 获取收藏的节目
+        let favoriteList = localStorage.getItem("favoriteList")
+        if (!favoriteList) {
+            localStorage.setItem("favoriteList", JSON.stringify([]))
+            this.favoriteCategory = []
+        } else {
+
+            // 从所有频道中得到收藏节目的信息
+            favoriteList = JSON.parse(favoriteList)
+            for (let i = 0, categoryList = channels,
+                len = categoryList.length; i < len; i++) {
+                if (categoryList[i].name === "所有频道") {
+                    this.favoriteCategory = []
+                    favoriteList.forEach((id) => {
+                        for (let j = 0; j < categoryList[i].channelList.length;
+                            j++) {
+                            if (categoryList[i].channelList[j].channelId ===
+                                id) {
+                                this.favoriteCategory.push(
+                                    categoryList[i].channelList[j]
+                                )
+                            }
+                        }
+                    })
+                    break
+                }
+            }
+        }
+    }
+
+    // 获取所有节目的节目单的map
+    getVideoMap(channels) {
+        return new Promise((resolve) => {
+            let storeSaveTime = sessionStorage.getItem("saveTime"),
+                saveTime = Number(storeSaveTime),
+                saveDate = new Date(saveTime).getDate(),
+                currentDate = new Date().getDate(),
+                videoMap = sessionStorage.getItem("videoMap")
+
+            // 如果节目单信息过期, 则发送请求更新节目单
+            if (!storeSaveTime || !videoMap ||
+                (saveTime - Date.now() > 40 * 60 * 1000) ||
+                currentDate !== saveDate) {
+                for (let i = 0, list = channels, len = list.length;
+                    i < len; i++) {
+                    if (list[i].name === "所有频道") {
+                        let fetchAllPromise = []
+                        for (let j = 0;
+                            j < list[i].channelList.length;
+                            j++) {
+                            let channelId = list[i].channelList[j].channelId
+                            fetchAllPromise.push(
+                                fetchPromise(
+                                    `${config.list}/${channelId}/1`,
+                                    list[i].channelList[j].channelId
+                                )
+                            )
+                        }
+                        let allVideo = {}
+                        Promise.all(fetchAllPromise).then((list) => {
+                            list.forEach((info) => {
+                                allVideo[info.id] = info.list
+                            })
+                            sessionStorage.setItem("saveTime", Date.now())
+                            sessionStorage.setItem("videoMap",
+                                JSON.stringify(allVideo))
+                            resolve(allVideo)
+                        })
+                    }
+                }
+            } else {
+
+                // 直接使用本地存储中的节目map
+                resolve(JSON.parse(videoMap))
+            }
+        })
+    }
+
+    applySelectCategory() {
+
+        // 切换到收藏的节目单
+        if (this.props.category === "我的收藏") {
+            this.setState({
+                currentChannelList: this.favoriteCategory || []
+            })
+            return
+        }
+
+        // 切换不同的分类
+        for (let i = 0, list = this.state.categoryList, len = list.length;
+            i < len; i++) {
+            if (list[i].name === this.props.category) {
+                this.setState({
+                    currentChannelList: list[i].channelList
+                })
+                return
+            }
+        }
+    }
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            open: false,
+            category: this.props.category,
+            search: "",
+            isHidePicture: false,
+            currentChannelList: [],
+            categoryList: [],
+            timestamp: Date.now(),
+            filter: ""
+        }
+        this.closeDrawer = this.closeDrawer.bind(this)
+        this.openDrawer = this.openDrawer.bind(this)
+        this.setCategory = this.setCategory.bind(this)
+        this.setIsHidePicture = this.setIsHidePicture.bind(this)
+        this.setFilter = this.setFilter.bind(this)
+        this.freshTitle = this.freshTitle.bind(this)
+        this.freshDetail = this.freshDetail.bind(this)
+    }
+
     componentDidMount() {
         // console.log(this.props)
         let isHidePicture = localStorage.getItem("isHidePicture")
@@ -451,79 +514,19 @@ class MiniDrawer extends React.Component {
 
         fetch(config.channels).then((res) => {
             res.json().then((channels) => {
-                // 获取收藏的节目
-                let favoriteList = localStorage.getItem("favoriteList")
-                if (!favoriteList) {
-                    localStorage.setItem("favoriteList", JSON.stringify([]))
-                    this.favoriteCategory = []
-                    // console.log("not store")
-                } else {
-                    // console.log("have store")
-                    favoriteList = JSON.parse(favoriteList)
-                    for (let i = 0, categoryList = channels,
-                        len = categoryList.length; i < len; i++) {
-                        if (categoryList[i].name === "所有频道") {
-                            this.favoriteCategory = []
-                            favoriteList.forEach((id) => {
-                                for (let j = 0; j < categoryList[i].channelList.length;
-                                    j++) {
-                                    if (categoryList[i].channelList[j].channelId ===
-                                        id) {
-                                        this.favoriteCategory.push(
-                                            categoryList[i].channelList[j]
-                                        )
-                                    }
-                                }
-                            })
-                            // console.log(this.favoriteCategory)
-                            break
-                        }
-                    }
-                }
-
-
-                fetch(config.details).then((res) => {
-                    res.json().then((details) => {
-                        let detailsMap = {}
-
-                        // 使用map存储, 将修改的复杂度从O(m * n)降低到O(m + n)
-                        for (let i of details) {
-                            detailsMap[i.channelId] = i
-                        }
-                        for (let i = 0, len1 = channels.length;
-                            i < len1; i++) {
-                            for (let j = 0, list = channels[i].channelList,
-                                len2 = list.length; j < len2; j++) {
-                                list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
-                            }
-                        }
-                        // console.log(channels)
-
-                        this.setState({
-                            categoryList: channels
-                        })
-
-                        // 初始化当前选择的channelsList
-                        for (let i = 0, list = channels, len = list.length;
-                            i < len; i++) {
-                            if (list[i].name === this.props.category) {
-                                this.setState({
-                                    currentChannelList: list[i].channelList
-                                })
-                                // console.log(list[i])
-                                break
-                            }
-                        }
-
-                        this.getvideoMap(channels).then((videoMap) => {
-                            // console.log(videoMap)
-                            this.freshTitle(videoMap)
-                        })
-                    })
+                this.freshFavoriteListInfo(channels)
+                this.setState({
+                    categoryList: channels
+                }, () => {
+                    this.freshDetail()
+                    this.getVideoMap(channels).then(this.freshTitle)
                 })
+
+                this.applySelectCategory()
             })
         })
 
+        // 周期性更新信息
         this.timer = setInterval(() => {
             // console.log("change")
             this.setState({
@@ -532,33 +535,17 @@ class MiniDrawer extends React.Component {
         }, 1000 * 120)
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        // // console.log(prevProps, prevState)
-        if (prevProps.category === this.props.category &&
-            prevState.timestamp === this.state.timestamp) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.category === this.props.category) {
             return
         }
-        // console.log(this.favoriteCategory)
-        if (this.props.category === "我的收藏") {
-            this.setState({
-                currentChannelList: this.favoriteCategory || []
-            })
-        }
-        for (let i = 0, list = this.state.categoryList, len = list.length;
-            i < len; i++) {
-            if (list[i].name === this.props.category) {
-                this.setState({
-                    currentChannelList: list[i].channelList
-                })
-                return
-            }
-        }
+
+        this.applySelectCategory()
     }
 
     componentWillUnmount() {
         clearInterval(this.timer)
     }
 }
-
 
 export default withStyles(styles, { withTheme: true })(MiniDrawer)

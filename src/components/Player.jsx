@@ -314,9 +314,7 @@ class Player extends React.Component {
         if (!this.player) {
             return
         }
-        console.log(event.key)
         let volume = JSON.parse(localStorage.getItem("volume"))
-        console.log(volume)
         switch (event.key) {
             case "ArrowUp": {
                 if (volume === null) {
