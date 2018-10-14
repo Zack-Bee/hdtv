@@ -34,7 +34,11 @@ const styles = (theme) => ({
 
 class VideoListButton extends React.Component {
     render() {
-        const { classes } = this.props
+        const { classes, timeline } = this.props
+        let currentStartTime = ""
+        if (timeline && timeline.includes("-")) {
+            currentStartTime = timeline.split("-")[0]
+        }
         return (
             <div>
                 <Button color="inherit"
@@ -58,6 +62,7 @@ class VideoListButton extends React.Component {
                                             setOpenIndex={this.setOpenIndex}
                                             channel={this.props.channel}
                                             index={index} 
+                                            currentStartTime={currentStartTime}
                                             openIndex={this.state.openIndex}/>
                                     ))
                                 }

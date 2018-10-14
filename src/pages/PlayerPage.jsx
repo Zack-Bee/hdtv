@@ -59,7 +59,8 @@ class PlayerPage extends React.Component {
                             channel={match.params.channel}/>
                         <FavoriteButton channel={match.params.channel}/>
                         <VideoListButton color="inherit" 
-                            channel={match.params.channel}/>
+                            channel={match.params.channel}
+                            timeline={this.state.timeline}/>
                         <RatioButton ratio={this.state.ratio}
                             setRatio={this.setRatio}/>
                     </Toolbar>

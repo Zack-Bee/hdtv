@@ -6,6 +6,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import { Link } from 'react-router-dom'
 import List from '@material-ui/core/List'
 import config from "../../config/config"
+import grey from "@material-ui/core/colors/grey"
+import blue from "@material-ui/core/colors/blue"
 
 
 const styles = (theme) => ({
@@ -15,6 +17,12 @@ const styles = (theme) => ({
         paddingTop: "3px",
         paddingBottom: "3px",
         lineHeight: "1.2em"
+    },
+    willPlayVideo: {
+        color: grey[500]
+    },
+    playingVideo: {
+        color: blue[500]
     }
 })
 
@@ -37,7 +45,11 @@ const VideoList = (props) => {
                     {props.list.list.map((videoInfo) => {
                         let startTime = new Date(videoInfo.startTime * 1000),
                             hour = startTime.getHours(),
-                            minute = startTime.getMinutes()
+                            minute = startTime.getMinutes(),
+                            isPlaying = false
+                        if (props.currentStartTime == videoInfo.startTime) {
+                            isPlaying = true
+                        }
                         if (props.now > videoInfo.endTime) {
                             return (
                                 <Link to={`/${config.version}/player/${props.channel}/${
@@ -47,7 +59,14 @@ const VideoList = (props) => {
                                         classes.nested
                                     }>
                                         <ListItemText
-                                            primary={`${hour}:${minute} ${
+                                            classes={{
+                                                primary: isPlaying && classes.playingVideo
+                                            }}
+                                            primary={`${String(hour).
+                                                padStart(2, "0")}:${
+                                                    String(minute)
+                                                    .padStart(2, "0")
+                                                } ${
                                                 videoInfo.title
                                                 }`}
                                         />
@@ -55,14 +74,26 @@ const VideoList = (props) => {
                                 </Link>
                             )
                         } else {
+                            let isPlaying = false
+                            if (props.now >= videoInfo.startTime && 
+                                props.now < videoInfo.endTime) {
+                                isPlaying = true
+                            }
                             return (
-                                <ListItem
+                                <ListItem 
                                     key={`${props.channel}-${videoInfo.startTime}`}
                                     divider button className={
                                         classes.nested
                                     } >
                                     <ListItemText
-                                        primary={`${hour}:${minute} ${
+                                        classes={{
+                                            primary: isPlaying ? 
+                                                classes.playingVideo :
+                                                classes.willPlayVideo
+                                        }}
+                                        primary={`${String(hour).
+                                            padStart(2, "0")}:${String(minute).
+                                            padStart(2, "0")} ${
                                             videoInfo.title
                                             }`}
                                     />

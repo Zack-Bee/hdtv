@@ -40,6 +40,12 @@ const styles = {
         transition: `opacity 300ms linear`,
         opacity: "1"
     },
+    firstLineWrapper: {
+        display: "flex",
+        justifyContent: "space-between",
+        color: grey[600],
+        alignItems: "center"
+    },
     viewPoepleWrapper: {
         display: "flex",
         lineHeight: "16px",
@@ -79,7 +85,7 @@ const ChannelItem = (props) => {
                                     />
                                 </Collapse>
                                 <CardContent classes={{ root: classes.content }}>
-                                    <div className={classes.viewPoepleWrapper}>
+                                    <div className={classes.firstLineWrapper}>
                                         <div>{props.name}</div>
                                         <div className={classes.viewPoepleWrapper}>
                                             <PeopleIcon classes={{ root: classes.icon }} />
