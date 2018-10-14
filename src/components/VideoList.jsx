@@ -76,7 +76,8 @@ const VideoList = (props) => {
                         } else {
                             let isPlaying = false
                             if (props.now >= videoInfo.startTime && 
-                                props.now < videoInfo.endTime) {
+                                props.now < videoInfo.endTime && 
+                                !props.currentStartTime) {
                                 isPlaying = true
                             }
                             return (

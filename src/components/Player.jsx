@@ -1,13 +1,13 @@
 import React from 'react'
 import blue from "@material-ui/core/colors/blue"
 import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Slide from '@material-ui/core/Slide';
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Slide from '@material-ui/core/Slide'
 import Hls from 'hls.js'
 import swf from 'flowplayer/dist/flowplayer.swf'
 import swfHls from 'flowplayer/dist/flowplayerhls.swf'
@@ -130,7 +130,112 @@ class Player extends React.Component {
         )
     }
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            sourceList: [],
+            currentSourcePath: "",
+            currentSourceName: "",
+            isDialogOpen: false
+        }
+
+        this.savedInfo = {}
+
+        this.closeDialog = this.closeDialog.bind(this)
+        this.continuePlayProcess = this.continuePlayProcess.bind(this)
+        this.keyupHandler = this.keyupHandler.bind(this)
+    }
+
+    componentDidMount() {
+        console.log("mount")
+        document.addEventListener("keyup", this.keyupHandler)
+    }
+
     
+    componentDidUpdate(prevProps) {
+        if (prevProps.ratio !== this.props.ratio) {
+            this.applyRatio(this.props.ratio)
+        }
+        if (!this.props.path) {
+            return
+        }
+        if (this.props.path === prevProps.path) {
+            return
+        }
+        if (this.player) {
+            if (this.player.engine) {
+                this.player.unload()
+            }
+            this.player.shutdown()
+        }
+        console.log("update")
+
+        // thumbnails(flowplayer)
+        this.player = loadNewVideo(this.playerNode, this.props.isLive,
+            this.props.path, this.props.title, this.props.thumbnails)
+        this.savedInfo = JSON.parse(localStorage.getItem(this.props.channel))
+        this.player.on("ready", () => {
+
+            // 回看时, 如果之前回看过该内容, 询问是否接着回看
+            if (this.props.timeline) {
+                if (this.savedInfo) {
+                    if (this.savedInfo.timeline === this.props.timeline && this.savedInfo.time > 0) {
+                        this.setState({isDialogOpen: true})
+                    }
+                }
+            }
+            this.applyRatio(this.props.ratio)
+            const video = document.querySelector(".fp-player video")
+            video.addEventListener("ended", this.props.onPlayEnd)
+        })
+
+        clearInterval(this.timer)
+
+        // 如果是回看节目, 记录timeline
+        if (this.props.timeline) {
+            this.timer = setInterval(() => {
+                let newInfo = Object.assign({}, this.savedInfo, {
+                    time: this.player.video.time,
+                    timeline: this.props.timeline
+                })
+                localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
+            }, 10 * 1000)
+        }
+    }
+
+    componentWillUnmount() {
+        console.log("unmount")
+        // 停止监听键盘事件
+        document.removeEventListener("keyup", this.keyupHandler)
+
+        // 返回主页前存储信息
+        let newInfo = Object.assign({}, this.savedInfo, {
+            time: this.player.video.time,
+            timeline: this.props.timeline
+        })
+        localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
+
+        // 卸载播放器
+        console.log("player will unmount")
+        let hlsEngine = flowplayer.engine('hlsjs-lite')
+
+        if (hlsEngine && hlsEngine.hls) {
+            console.log("hls stopLoad")
+            hlsEngine.hls.stopLoad();
+        }
+        if (this.player) {
+            this.player.shutdown()
+        }
+        let video = document.querySelector("#playerContainer video")
+        if (video) {
+            video.src = ""
+            video.load()
+        }
+
+        // 停止interval
+        clearInterval(this.timer)
+    }
+
     closeDialog() {
         this.setState({
             isDialogOpen: false
@@ -257,111 +362,6 @@ class Player extends React.Component {
             }
         }
     }
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            sourceList: [],
-            currentSourcePath: "",
-            currentSourceName: "",
-            isDialogOpen: false
-        }
-
-        this.savedInfo = {}
-
-        this.closeDialog = this.closeDialog.bind(this)
-        this.continuePlayProcess = this.continuePlayProcess.bind(this)
-        this.keyupHandler = this.keyupHandler.bind(this)
-    }
-
-    componentDidMount() {
-        console.log("mount")
-        document.addEventListener("keyup", this.keyupHandler)
-    }
-
-    
-    componentDidUpdate(prevProps) {
-        if (prevProps.ratio !== this.props.ratio) {
-            this.applyRatio(this.props.ratio)
-        }
-        if (!this.props.path) {
-            return
-        }
-        if (this.props.path === prevProps.path) {
-            return
-        }
-        if (this.player) {
-            if (this.player.engine) {
-                this.player.unload()
-            }
-            this.player.shutdown()
-        }
-
-        // thumbnails(flowplayer)
-        this.player = loadNewVideo(this.playerNode, this.props.isLive,
-            this.props.path, this.props.title, this.props.thumbnails)
-        this.savedInfo = JSON.parse(localStorage.getItem(this.props.channel))
-        this.player.on("ready", () => {
-
-            // 回看时, 如果之前回看过该内容, 询问是否接着回看
-            if (this.props.timeline) {
-                if (this.savedInfo) {
-                    if (this.savedInfo.timeline === this.props.timeline && this.savedInfo.time > 0) {
-                        this.setState({isDialogOpen: true})
-                    }
-                }
-            }
-            this.applyRatio(this.props.ratio)
-        })
-
-        clearInterval(this.timer)
-
-        // 如果是回看节目, 记录timeline
-        if (this.props.timeline) {
-            this.timer = setInterval(() => {
-                let newInfo = Object.assign({}, this.savedInfo, {
-                    time: this.player.video.time,
-                    timeline: this.props.timeline
-                })
-                localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
-            }, 10 * 1000)
-        }
-    }
-
-    componentWillUnmount() {
-        console.log("unmount")
-        // 停止监听键盘事件
-        document.removeEventListener("keyup", this.keyupHandler)
-
-        // 返回主页前存储信息
-        let newInfo = Object.assign({}, this.savedInfo, {
-            time: this.player.video.time,
-            timeline: this.props.timeline
-        })
-        localStorage.setItem(this.props.channel, JSON.stringify(newInfo))
-
-        // 卸载播放器
-        console.log("player will unmount")
-        let hlsEngine = flowplayer.engine('hlsjs-lite')
-
-        if (hlsEngine && hlsEngine.hls) {
-            console.log("hls stopLoad")
-            hlsEngine.hls.stopLoad();
-        }
-        if (this.player) {
-            this.player.shutdown()
-        }
-        let video = document.querySelector("#playerContainer video")
-        if (video) {
-            video.src = ""
-            video.load()
-        }
-
-        // 停止interval
-        clearInterval(this.timer)
-    }
-
-
 }
 
 export default withStyles(styles)(Player)

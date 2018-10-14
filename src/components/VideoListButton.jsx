@@ -53,7 +53,7 @@ class VideoListButton extends React.Component {
                         <ClickAwayListener onClickAway={this.closeList}>
                             <List disablePadding className={classes.header}>
                                 {
-                                    this.state.videoList.map((list, index) => (
+                                    this.props.videoList.map((list, index) => (
                                         <VideoList list={list} 
                                             now={this.state.now}
                                             key={`${this.props.channel}-${
@@ -109,43 +109,13 @@ class VideoListButton extends React.Component {
             this.setState({ openIndex: index })
         }
     }
-    componentDidUpdate(prevProps, prevState) {
-        if (!this.props.channel || this.props.channel === prevProps.channel) {
-            return
-        }
-        fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
-            res.json().then((list) => {
-                // console.log(list)
-                this.setState({
-                    videoList: list.reverse()
-                })
-            })
-        })
-    }
 
     componentDidMount() {
-        fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
-            res.json().then((list) => {
-                // console.log(list)
-                this.setState({
-                    videoList: list.reverse()
-                })
-            })
-        })
         this.timer = setImmediate(() => {
             this.setState({
                 now: Math.floor(Date.now() / 1000)
             })
-
-            fetch(`${config.list}/${this.props.channel}/7`).then((res) => {
-                res.json().then((list) => {
-                    // console.log(list)
-                    this.setState({
-                        videoList: list.reverse()
-                    })
-                })
-            })
-        }, 1000 * 60 * 5)
+        }, 1000 * 60 * 3)
     }
 }
 

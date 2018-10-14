@@ -63,7 +63,12 @@ import config from "../config/config"
 // }
 
 console.log("%c  github: https://github.com/Zack-Bee/hdtv  ", 
-    "color: #fff; font-size: 30px; background-color: #2196f3; padding: 10px; border-radius: 20px;")
+    `color: #333; 
+    font-size: 20px; 
+    background-image: linear-gradient(to right, #4facfe, #00f2fe); 
+    padding: 10px; 
+    border-radius: 20px;`
+)
 
 const App = () => (
     <React.Fragment>
@@ -82,13 +87,13 @@ const App = () => (
             // </Transition>
         )} />
         <Route path={`/${config.version}/player/:channel/:timeline*`} 
-            children={({ match }) => (
+            children={({ match, history }) => (
             // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)}>
             //     {
             //         (state) => (
                         match &&
                         (<div id="player">
-                            <PlayerPage match={match} />
+                            <PlayerPage match={match} history={history}/>
                         </div>)
             //         )
             //     }
