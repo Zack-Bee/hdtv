@@ -110,6 +110,18 @@ const styles = (theme) => ({
         [theme.breakpoints.only("xs")]: {
             minHeight: "0"
         }
+    },
+    flexAuto: {
+        flex: "1 1 auto"
+    },
+    showPictureButtonMargin: {
+        margin: "0 20px 0 10px"
+    },
+    footer: {
+        background: blue[500],
+        color: "#fff",
+        marginTop: "40px",
+        padding: "20px 70px 20px 70px"
     }
 })
 
@@ -128,7 +140,7 @@ class MiniDrawer extends React.Component {
                         <Tooltip title="显示文字">
                             <IconButton
                                 color="inherit"
-                                aria-label="open drawer"
+                                aria-label="显示文字"
                                 onClick={this.openDrawer}
                                 className={classNames(classes.menuButton,
                                     this.state.open && classes.hide)}
@@ -139,11 +151,11 @@ class MiniDrawer extends React.Component {
                         <Typography variant="title" color="inherit" noWrap>
                             {this.props.category}
                         </Typography>
-                        <div style={{ flex: "1 1 auto" }}></div>
+                        <div className={classes.flexAuto}></div>
                         <SearchInput className={classes.input}
                             channelList={this.state.currentChannelList}
                             setFilter={this.setFilter} />
-                        <div style={{ margin: "0 20px 0 10px" }}>
+                        <div className={classes.showPictureButtonMargin}>
                             <IconButton onClick={() => {
                                 this.setIsHidePicture(!this.state.isHidePicture)
                             }}>
@@ -194,12 +206,7 @@ class MiniDrawer extends React.Component {
                             cacheNum={this.state.timestamp}
                             filter={this.state.filter} />
                     </div>
-                    <footer style={{
-                        background: blue[500],
-                        color: "#fff",
-                        marginTop: "40px",
-                        padding: "20px 70px 20px 70px"
-                    }}>
+                    <footer className={classes.footer}>
                         <Grid container alignContent="space-around">
                             <Grid item xs={12} sm={6} >
                                 <Typography variant="headline" paragraph color="inherit">

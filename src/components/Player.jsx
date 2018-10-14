@@ -88,6 +88,7 @@ class Player extends React.Component {
     render() {
         return (
             <React.Fragment>
+                {/* 对flowplayer的hack, 没有使用css in js */}
                 <style>
                     {`
                     #playerContainer .fp-color {

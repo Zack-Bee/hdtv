@@ -39,6 +39,23 @@ const styles = {
     default: {
         transition: `opacity 300ms linear`,
         opacity: "1"
+    },
+    viewPoepleWrapper: {
+        display: "flex",
+        lineHeight: "16px",
+        fontSize: "16px",
+        color: grey[500],
+        height: "16px"
+    },
+    title: {
+        color: grey[700]
+    },
+    channelListWrapper: {
+        transition: "box-shadow 0.3s",
+        boxShadow: "0 3px 0 0 rgba(0, 0, 0, 0.2)",
+        "&:hover": {
+            boxShadow: "0 3px 8px 8px rgba(0, 0, 0, 0.2)"
+        }
     }
 }
 
@@ -51,7 +68,7 @@ const ChannelItem = (props) => {
                 <Grid item xs={12} sm={6} md={4} lg={3} 
                     classes={{ item: `${classes.default} ${classes[state]}` }}>
                     <Link to={`/${config.version}/player/${props.channelId}`}>
-                        <div className="ChannelListWrapper">
+                        <div className={classes.channelListWrapper}>
                             <Card classes={{ root: classes.root }}>
                                 <Collapse in={!props.isHidePicture} timeout="auto"
                                     unmountOnExit>
@@ -62,25 +79,14 @@ const ChannelItem = (props) => {
                                     />
                                 </Collapse>
                                 <CardContent classes={{ root: classes.content }}>
-                                    <div style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        color: grey[600],
-                                        alignItems: "center"
-                                    }}>
+                                    <div className={classes.viewPoepleWrapper}>
                                         <div>{props.name}</div>
-                                        <div style={{
-                                            display: "flex",
-                                            lineHeight: "16px",
-                                            fontSize: "16px",
-                                            color: grey[500],
-                                            height: "16px"
-                                        }}>
+                                        <div className={classes.viewPoepleWrapper}>
                                             <PeopleIcon classes={{ root: classes.icon }} />
                                             <span>{props.viewerNum ? props.viewerNum : 0}</span>
                                         </div>
                                     </div>
-                                    <div style={{ color: grey[700] }}>{props.title}</div>
+                                    <div className={classes.title}>{props.title}</div>
                                 </CardContent>
                             </Card>
                         </div>
@@ -98,18 +104,6 @@ class ChannelList extends React.Component {
         // console.log(this.props.filter)
         return (
             <div>
-                <style>
-                    {
-                        `.ChannelListWrapper {
-                            transition: box-shadow 0.3s;
-                            box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.2);
-                        }`
-                        + `
-                        .ChannelListWrapper:hover {
-                            box-shadow: 0 3px 8px 8px rgba(0, 0, 0, 0.2);
-                        }`
-                    }
-                </style>
                 <Grid container spacing={isHidePicture ? 0 : 24}>
                     {this.props.channelList.map((channel) => (
                         <ChannelItemWidthStyles key={channel.channelId}

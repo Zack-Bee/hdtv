@@ -12,24 +12,28 @@ const styles = (theme) => ({
         backgroundColor: blue[400],
         padding: "4px 8px",
         borderRadius: "5px"
+    },
+    input: {
+        color: "#fff",
+        border: "none",
+        backgroundColor: blue[400],
+        font: "inherit",
+        padding: 0,
+        outline: "none",
+        transition: "width 0.5s"
     }
 })
 
 class SearchInput extends React.Component {
     render() {
+        const {classes} = this.props
         return (
-            <div className={this.props.classes.root}>
+            <div className={classes.root}>
                 <Search />
-                <input onFocus={this.bigger} onBlur={this.smaller} style={{
-                    color: "#fff",
-                    border: "none",
-                    backgroundColor: blue[400],
-                    font: "inherit",
-                    padding: 0,
-                    outline: "none",
-                    width: this.state.width,
-                    transition: "width 0.5s"
-                }} onChange={this.showResult} autoComplete="off" />
+                <input onFocus={this.bigger} onBlur={this.smaller} 
+                    className={classes.input} onChange={this.showResult} 
+                    autoComplete="off" style={{width: this.state.width}}
+                />
             </div>
         )
     }

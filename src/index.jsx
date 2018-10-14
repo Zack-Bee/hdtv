@@ -62,6 +62,9 @@ import config from "../config/config"
 //     }
 // }
 
+console.log("%c  github: https://github.com/Zack-Bee/hdtv  ", 
+    "color: #fff; font-size: 30px; background-color: #2196f3; padding: 10px; border-radius: 20px;")
+
 const App = () => (
     <React.Fragment>
         <CssBaseline />

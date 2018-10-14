@@ -29,7 +29,7 @@ class SourceButton extends React.Component {
         return (
             <div>
                 <Button
-                    aria-owns={anchorEl ? 'simple-menu' : null}
+                    aria-owns={anchorEl ? 'source-menu' : null}
                     aria-haspopup="true"
                     onClick={this.handleClick}
                     color="inherit"
@@ -37,7 +37,7 @@ class SourceButton extends React.Component {
                     {this.props.name}
                 </Button>
                 <Menu
-                    id="simple-menu"
+                    id="source-menu"
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={this.handleClose}
