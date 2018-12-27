@@ -58,6 +58,9 @@ module.exports = {
             options: {
                 name: '[name].[hash].[ext]',
             }
+        }, {
+            test: /\.svg$/,
+            loader: 'svg-inline-loader'
         }]
     }
 }

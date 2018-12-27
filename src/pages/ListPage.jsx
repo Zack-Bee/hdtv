@@ -1,6 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
+import withWidth from "@material-ui/core/withWidth"
 import Drawer from '@material-ui/core/Drawer'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -15,11 +16,20 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ViewModule from "@material-ui/icons/ViewModule"
 import Grid from "@material-ui/core/Grid"
 import ViewHeadline from "@material-ui/icons/ViewHeadline"
+import pink from "@material-ui/core/colors/pink"
 import blue from "@material-ui/core/colors/blue"
+import red from "@material-ui/core/colors/red"
+import teal from "@material-ui/core/colors/teal"
+import amber from "@material-ui/core/colors/amber"
 import SearchInput from "../components/SearchInput.jsx"
 import CategoryItem from "../components/CategoryItem.jsx"
 import ChannelList from "../components/ChannelList.jsx"
 import config from "../../config/config"
+import Button from "@material-ui/core/Button"
+import { AutoRotatingCarousel, Slide } from 'material-auto-rotating-carousel'
+import partyPng from "../icon/party.png"
+import classPng from "../icon/class.png"
+import dancePng from "../icon/dance.png"
 
 const drawerWidth = 240
 
@@ -39,6 +49,15 @@ const fetchPromise = (url, id) => {
         })
     })
 }
+
+const pinkTheme = createMuiTheme({
+    palette: {
+        primary: {
+            main: pink[500],
+            dark: pink[500]
+        }
+    }
+})
 
 const styles = (theme) => ({
     root: {
@@ -122,12 +141,20 @@ const styles = (theme) => ({
         color: "#fff",
         marginTop: "40px",
         padding: "20px 70px 20px 70px"
+    },
+    alignCenter: {
+        display: "flex",
+        justifyContent: "center"
+    },
+    margin: {
+        margin: "8px 0"
     }
 })
 
 class MiniDrawer extends React.Component {
     render() {
         const { classes, theme } = this.props
+        const isMobile = this.props.width === "xs"
 
         return (
             <div className={classes.root}>
@@ -201,10 +228,51 @@ class MiniDrawer extends React.Component {
                         style={{ height: 0, minHeight: 0 }}
                     />
                     <div className={classes.container}>
+                        {(this.props.category === "校内直播") &&
+                            <MuiThemeProvider theme={pinkTheme}>
+                                <div className={classes.alignCenter}>
+                                    <a href="https://github.com/Zack-Bee/hdtv-admin/blob/master/README.md">
+                                        <Button color="primary"  className={classes.margin}>
+                                            校内直播使用教程
+                                        </Button>
+                                    </a>
+                                </div>
+                                <div className={classes.alignCenter}>
+                                    <a href="http://v.neu6.edu.cn">
+                                        <Button color="primary" className={classes.margin}>
+                                            校内直播入口
+                                        </Button>
+                                    </a>
+                                </div>
+                            </MuiThemeProvider>
+                        }
                         <ChannelList isHidePicture={this.state.isHidePicture}
                             channelList={this.state.currentChannelList}
                             cacheNum={this.state.timestamp}
-                            filter={this.state.filter} />
+                            filter={this.state.filter} 
+                        />
+                        <AutoRotatingCarousel open={this.state.isCarouselOpen}
+                            label="现在就开始直播" onClose={this.closeCarousel}
+                            mobile={isMobile} onStart={this.gotoLive}> 
+                            <Slide media={<img src={partyPng}/>}
+                                title="校内直播功能上线"
+                                subtitle="无需流量, 让精彩尽收眼底"
+                                mediaBackgroundStyle={{ backgroundColor: red[400] }}
+                                style={{ backgroundColor: red[600] }}
+                            />
+                            <Slide media={<img src={dancePng}/>}
+                                title="晚会直播"
+                                subtitle="你的舞台, 从现在无处不在"
+                                mediaBackgroundStyle={{ backgroundColor: amber[400] }}
+                                style={{ backgroundColor: amber[600] }}
+                            />
+                            <Slide media={<img src={classPng}/>}
+                                title="视频培训"
+                                subtitle="方便快捷, 足不出户技能++"
+                                mediaBackgroundStyle={{ backgroundColor: teal[400] }}
+                                style={{ backgroundColor: teal[600] }}
+                            />
+                        </AutoRotatingCarousel>
                     </div>
                     <footer className={classes.footer}>
                         <Grid container alignContent="space-around">
@@ -300,6 +368,14 @@ class MiniDrawer extends React.Component {
 
     constructor(props) {
         super(props)
+
+        const version = localStorage.getItem("version")
+        let isCarouselOpen = false
+        if (version === null || version !== config.versionDetail) {
+            localStorage.setItem("version", config.versionDetail)
+            isCarouselOpen = true
+        }
+
         this.state = {
             open: false,
             category: this.props.category,
@@ -308,7 +384,8 @@ class MiniDrawer extends React.Component {
             currentChannelList: [],
             categoryList: [],
             timestamp: Date.now(),
-            filter: ""
+            filter: "",
+            isCarouselOpen
         }
         this.closeDrawer = this.closeDrawer.bind(this)
         this.openDrawer = this.openDrawer.bind(this)
@@ -317,10 +394,11 @@ class MiniDrawer extends React.Component {
         this.setFilter = this.setFilter.bind(this)
         this.freshTitle = this.freshTitle.bind(this)
         this.freshDetail = this.freshDetail.bind(this)
+        this.closeCarousel = this.closeCarousel.bind(this)
+        this.gotoLive = this.gotoLive.bind(this)
     }
 
     componentDidMount() {
-        // console.log(this.props)
         let isHidePicture = localStorage.getItem("isHidePicture")
 
         if (isHidePicture) {
@@ -329,6 +407,8 @@ class MiniDrawer extends React.Component {
             isHidePicture = false
             localStorage.setItem("isHidePicture", JSON.stringify(false))
         }
+
+        this.merryChristmas()
 
         this.setState({
             isHidePicture
@@ -369,6 +449,20 @@ class MiniDrawer extends React.Component {
 
     componentWillUnmount() {
         clearInterval(this.timer)
+    }
+
+    // 跳转到校内直播
+    gotoLive() {
+        console.log(this.props.history)
+        this.closeCarousel()
+        this.props.history.push(`/${config.version}/list/channel/校内直播`)
+    }
+
+    // 关闭轮播图
+    closeCarousel() {
+        this.setState({
+            isCarouselOpen: false
+        })
     }
 
     // 打开侧面导航栏
@@ -555,6 +649,31 @@ class MiniDrawer extends React.Component {
             }
         }
     }
+
+    // 圣诞节, 平安夜彩蛋
+    merryChristmas() {
+        const _date = new Date()
+        const month = _date.getMonth()
+        const date = _date.getDate()
+        if (month === 11 && date == 25) {
+            document.title = "HDTV: Merry Christmas! : )"
+        } else if (month == 11 && date == 24) {
+            document.title = "HDTV: Happy Christmas Eve! : )"
+        }
+    }
+
+    // 元旦彩蛋
+    happyNewYears() {
+        const _date = new Date()
+        const year = _date.getFullYear()
+        const month = _date.getMonth()
+        const date = _date.getDate()
+        if (month === 0 && date == 1) {
+            document.title = `HDTV: 元旦快乐, ${year}更加精彩`
+        } else if (month === 11 && date === 31) {
+            document.title = `HDTV: 元旦快乐, ${year}感谢有你`
+        }
+    }
 }
 
-export default withStyles(styles, { withTheme: true })(MiniDrawer)
+export default withWidth()(withStyles(styles, { withTheme: true })(MiniDrawer))

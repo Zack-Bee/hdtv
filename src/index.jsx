@@ -74,13 +74,15 @@ const App = () => (
     <React.Fragment>
         <CssBaseline />
         <Route path={`/${config.version}/list/channel/:category`}
-            children={({ match }) => (
+            children={({ match, history }) => (
             // <Transition mountOnEnter unmountOnExit timeout={500} in={Boolean(match)} >
             //     {
             //         (state) => (
                         match &&
                         (<div id="list">
-                            <ListPage category={match.params.category} />
+                            <ListPage category={match.params.category} 
+                                history={history} 
+                            />
                         </div>)
             //         )
             //     }

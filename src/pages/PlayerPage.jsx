@@ -235,6 +235,8 @@ class PlayerPage extends React.Component {
     }
 
     openDialog() {
+        // 播放结束退出全屏
+        document.exitFullscreen()
 
         // 是回放的节目播放完毕
         if (this.state.timeline && this.state.timeline.includes("-")) {
