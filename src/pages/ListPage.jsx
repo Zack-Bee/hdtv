@@ -228,7 +228,7 @@ class MiniDrawer extends React.Component {
                         style={{ height: 0, minHeight: 0 }}
                     />
                     <div className={classes.container}>
-                        {(this.props.category === "校内直播") &&
+                        {/* {(this.props.category === "校内直播") &&
                             <MuiThemeProvider theme={pinkTheme}>
                                 <div className={classes.alignCenter}>
                                     <a href="https://github.com/Zack-Bee/hdtv-admin/blob/master/README.md">
@@ -245,13 +245,13 @@ class MiniDrawer extends React.Component {
                                     </a>
                                 </div>
                             </MuiThemeProvider>
-                        }
+                        } */}
                         <ChannelList isHidePicture={this.state.isHidePicture}
                             channelList={this.state.currentChannelList}
                             cacheNum={this.state.timestamp}
                             filter={this.state.filter} 
                         />
-                        <AutoRotatingCarousel open={this.state.isCarouselOpen}
+                        {/* <AutoRotatingCarousel open={this.state.isCarouselOpen}
                             label="现在就开始直播" onClose={this.closeCarousel}
                             mobile={isMobile} onStart={this.gotoLive}> 
                             <Slide media={<img src={partyPng}/>}
@@ -272,7 +272,7 @@ class MiniDrawer extends React.Component {
                                 mediaBackgroundStyle={{ backgroundColor: teal[400] }}
                                 style={{ backgroundColor: teal[600] }}
                             />
-                        </AutoRotatingCarousel>
+                        </AutoRotatingCarousel> */}
                     </div>
                     <footer className={classes.footer}>
                         <Grid container alignContent="space-around">
