@@ -22,7 +22,8 @@ const config = merge(common, {
                         "targets": [
                             "safari >= 9",
                             "ie >= 11"
-                        ]
+                        ],
+                        "module": false
                     }]
                 ]
             },
@@ -33,7 +34,27 @@ const config = merge(common, {
         new CleanWebpackPlugin("./dist", {
             root: path.resolve(__dirname, "../")
         })
-    ]
+    ],
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            cacheGroups: {
+                default: false,
+                vendors: false,
+                libs: {
+                    name: "chunk-libs",
+                    test: /node_modules/,
+                    priority: 10,
+                    chunks: "initial"
+                },
+                materialUI: {
+                    name: "chunk-materialUI",
+                    test: /node_modules[/\\]@material-ui/,
+                    priority: 20,
+                }
+            }
+        }
+    }
 })
 
 module.exports = config

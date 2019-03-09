@@ -223,7 +223,7 @@ class MiniDrawer extends React.Component {
                             isActive={this.state.category === "我的收藏"} />
                     </List>
                 </Drawer>
-                <main className={classes.content}>
+                <article className={classes.content}>
                     <div className={classes.toolbar}
                         style={{ height: 0, minHeight: 0 }}
                     />
@@ -361,7 +361,7 @@ class MiniDrawer extends React.Component {
                             </Grid>
                         </Grid>
                     </footer>
-                </main>
+                </article>
             </div>
         )
     }
@@ -371,16 +371,27 @@ class MiniDrawer extends React.Component {
 
         const version = localStorage.getItem("version")
         let isCarouselOpen = false
-        if (version === null || version !== config.versionDetail) {
-            localStorage.setItem("version", config.versionDetail)
-            isCarouselOpen = true
+
+        // 当存储的版本号与当前版本不同时显示轮播图
+        // if (version === null || version !== config.versionDetail) {
+            // localStorage.setItem("version", config.versionDetail)
+            // isCarouselOpen = true
+        // }
+
+        let isHidePicture = localStorage.getItem("isHidePicture")
+
+        if (isHidePicture) {
+            isHidePicture = JSON.parse(isHidePicture)
+        } else {
+            isHidePicture = false
+            localStorage.setItem("isHidePicture", JSON.stringify(false))
         }
 
         this.state = {
             open: false,
             category: this.props.category,
             search: "",
-            isHidePicture: false,
+            isHidePicture,
             currentChannelList: [],
             categoryList: [],
             timestamp: Date.now(),
@@ -396,24 +407,10 @@ class MiniDrawer extends React.Component {
         this.freshDetail = this.freshDetail.bind(this)
         this.closeCarousel = this.closeCarousel.bind(this)
         this.gotoLive = this.gotoLive.bind(this)
+        this.merryChristmas()
     }
 
     componentDidMount() {
-        let isHidePicture = localStorage.getItem("isHidePicture")
-
-        if (isHidePicture) {
-            isHidePicture = JSON.parse(isHidePicture)
-        } else {
-            isHidePicture = false
-            localStorage.setItem("isHidePicture", JSON.stringify(false))
-        }
-
-        this.merryChristmas()
-
-        this.setState({
-            isHidePicture
-        })
-
         fetch(config.channels).then((res) => {
             res.json().then((channels) => {
                 this.freshFavoriteListInfo(channels)
