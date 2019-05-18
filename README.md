@@ -45,6 +45,7 @@ npm start
 
 ### 使用本项目的其他站点
 * [辽宁师范大学HDTV](http://iptv.lnnu.edu.cn:8080/v1/list/channel/%E7%83%AD%E9%97%A8%E9%A2%91%E9%81%93)
+* [西北农林大学IPTV](https://iptv.nwafu.edu.cn/)
 
 ### 其他
 [东北大学HDTV](https://hdtv.neu6.edu.cn/v1/list/channel/%E7%83%AD%E9%97%A8%E9%A2%91%E9%81%93)

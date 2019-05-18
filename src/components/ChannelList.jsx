@@ -71,7 +71,7 @@ const ChannelItem = (props) => {
     return (
         <Transition in={props.isShow} unmountOnExit timeout={300}>
             {(state) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} 
+                <Grid item xs={12} sm={6} md={4} lg={3}
                     classes={{ item: `${classes.default} ${classes[state]}` }}>
                     <Link to={`/${config.version}/player/${props.channelId}`}>
                         <div className={classes.channelListWrapper}>
@@ -119,7 +119,7 @@ class ChannelList extends React.Component {
                             channelId={channel.channelId}
                             viewerNum={channel.viewerNum}
                             imageSrc={channel.snapshotUrl}
-                            isShow={`${channel.name} ${channel.title}`.
+                            isShow={`${channel.name} ${channel.title} ${channel.keyWord}`.
                                 toLowerCase().includes(this.props.filter)} />
                     ))}
                 </Grid>
