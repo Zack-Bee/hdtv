@@ -93,6 +93,11 @@ const theme = createMuiTheme({
     }
 })
 
+// 直播源元数据缓存结构版本: 后端模板语义变更(如缩略图模板从流名 hls47 路径
+// 改回频道 ID 路径)时递增, 旧缓存全部视为过期丢弃, 回看页会重新拉取直播
+// sources 获得新模板——避免历史用户永久拿着过期模板请求缩略图而 404
+const META_V = 2
+
 class PlayerPage extends React.Component {
     render() {
         const { classes, match } = this.props
@@ -417,24 +422,27 @@ class PlayerPage extends React.Component {
     }
 
     // 直播源元数据缓存 (name/quality/canCatchup/thumbnails/timeShift)
+    // 结构带版本号 META_V, 版本不符(含旧版纯数组格式)一律返回 null 触发重拉
     loadSourceMeta(channel) {
         try {
-            return JSON.parse(localStorage.getItem("meta_" + channel))
+            const saved = JSON.parse(localStorage.getItem("meta_" + channel))
+            return saved && saved.v === META_V ? saved.list : null
         } catch (e) {
             return null
         }
     }
 
     saveSourceMeta(channel, sourceList) {
-        localStorage.setItem("meta_" + channel, JSON.stringify(
-            sourceList.map((s) => ({
+        localStorage.setItem("meta_" + channel, JSON.stringify({
+            v: META_V,
+            list: sourceList.map((s) => ({
                 name: s.name,
                 quality: s.quality,
                 canCatchup: s.canCatchup,
                 thumbnails: s.thumbnails,
                 timeShift: s.timeShift
             }))
-        ))
+        }))
     }
 
     // 补拉直播源元数据 (回看页首次进入且无缓存时); 失败则仅用回看响应自身数据播放
