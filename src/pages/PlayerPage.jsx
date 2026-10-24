@@ -533,7 +533,8 @@ class PlayerPage extends React.Component {
         this.setSource(list[nextIndex], nextIndex)
     }
 
-    // 回看播放结束: 自动连播下一个已播出的节目, 不弹确认框
+    // 回看播放结束: 自动连播下一个节目 (不弹确认框)
+    // 去向由 playNextVideo 统一分类: 已播出进回看 / 正在直播转时移接着播 / 未开播停住
     handlePlayEnd() {
         // 播放结束退出全屏 (非全屏状态调用可能抛同步错误或 reject promise)
         try {
@@ -545,32 +546,7 @@ class PlayerPage extends React.Component {
 
         // 是回放的节目播放完毕 (时移路由 ts- 不参与连播逻辑)
         if (this.state.timeline && !this.isTimeshift(this.state.timeline)) {
-            const timeline = this.state.timeline.split("-")
-            const endTime = timeline[1]
-            const videoListInOrder = this.state.videoList.slice().reverse()
-            for (let i = 0, allLen = videoListInOrder.length; i < allLen; i++) {
-                for (let j = 0, list = videoListInOrder[i].list,
-                    len = list.length; j < len; j++) {
-                    if (endTime <= list[j].endTime) {
-                        if (j === len - 1) {
-                            if (i !== allLen - 1) {
-                                const nextVideo = videoListInOrder[i + 1].list[0]
-                                if (nextVideo.endTime * 1000 >= Date.now()) {
-                                    return
-                                }
-                            } else {
-                                return
-                            }
-                        } else {
-                            if (list[j + 1].endTime * 1000 >= Date.now()) {
-                                return
-                            }
-                        }
-                        this.playNextVideo()
-                        return
-                    }
-                }
-            }
+            this.playNextVideo()
         }
     }
 
@@ -611,29 +587,35 @@ class PlayerPage extends React.Component {
                 for (let j = 0, list = videoListInOrder[i].list,
                     len = list.length; j < len; j++) {
                     if (endTime <= list[j].endTime) {
+                        // 下一节目: 同日下一条, 日末则取次日消息首条 (相邻节目保证衔接)
+                        let nextVideo = null
                         if (j === len - 1) {
                             if (i !== allLen - 1) {
-                                const nextVideo = videoListInOrder[i + 1].list[0]
-                                if (nextVideo.endTime * 1000 < Date.now()) {
-                                    this.props.history.push(
-                                        `/${config.version}/player/${channel}/${
-                                        nextVideo.startTime
-                                        }-${
-                                        nextVideo.endTime
-                                        }`
-                                    )
-                                }
+                                nextVideo = videoListInOrder[i + 1].list[0]
                             }
                         } else {
-                            if (list[j + 1].endTime * 1000 < Date.now()) {
+                            nextVideo = list[j + 1]
+                        }
+                        if (nextVideo) {
+                            const nowMs = Date.now()
+                            const s = nextVideo.startTime * 1000
+                            const e = nextVideo.endTime * 1000
+                            if (e > 0 && e < nowMs) {
+                                // 已播出: 进入回看
                                 this.props.history.push(
                                     `/${config.version}/player/${channel}/${
-                                    list[j + 1].startTime
+                                    nextVideo.startTime
                                     }-${
-                                    list[j + 1].endTime
+                                    nextVideo.endTime
                                     }`
                                 )
+                            } else if (s <= nowMs && (e === 0 || nowMs < e)) {
+                                // 正在直播: 转入时移接着播。begin 取节目开始时刻
+                                // (= 刚播完节目的 endTime), 内容与回看末尾无缝衔接;
+                                // chosenAt 为切换瞬间。endTime 为 0 (无下一条) 也视为播出中
+                                this.handleTimeshift(nextVideo.startTime)
                             }
+                            // 未开播: 停在结束画面
                         }
                         return
                     }
