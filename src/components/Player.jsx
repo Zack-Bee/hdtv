@@ -1357,16 +1357,29 @@ class Player extends React.Component {
         return nowTs - TIMESHIFT_WINDOW + pos.ratio * TIMESHIFT_WINDOW
     }
 
+    // 主轴选择粒度: 对齐到整分钟(向前取最近整分, 秒级选择由放大镜承担,
+    // 2026-10-26)。向前取整越过当前时刻(轴右缘=实时)时改为向后取整,
+    // 保证 begin 不越过 now 而请求不存在的未来时移流
+    snapAxisTs(ts) {
+        ts = Math.round(ts / 60) * 60
+        if (ts > Date.now() / 1000) {
+            ts = Math.floor(ts / 60) * 60
+        }
+        return ts
+    }
+
     onBarMouseDown(e) {
         // 直播/时移页共用轴: 点击某时刻 -> 进入该时刻开始的时移播放
-        // begin 优先取悬停缩略图显示的时间(lastAxisTs, 所见即所得);
-        // 无悬停记录(触屏直接点)时兜底按点击位置计算
+        // begin 优先取悬停缩略图显示的时间(lastAxisTs, 所见即所得, 已对齐整分);
+        // 无悬停记录(触屏直接点)时兜底按点击位置计算后同样对齐整分
         // chosenAt 仍为点击当下(handleTimeshift 内取 Date.now())
         const mode = this.mode()
         if (mode === "live" || mode === "timeshift") {
-            const fallback = this.axisTsByEvent(e)
-            const ts = this.lastAxisTs > 0 ? this.lastAxisTs : fallback
+            let ts = this.lastAxisTs > 0 ? this.lastAxisTs : this.axisTsByEvent(e)
             if (isFinite(ts) && this.props.onTimeshift) {
+                if (this.lastAxisTs <= 0) {
+                    ts = this.snapAxisTs(ts)
+                }
                 this.props.onTimeshift(Math.floor(ts))
             }
             return
@@ -1515,10 +1528,13 @@ class Player extends React.Component {
                     this.lensOpen = false
                 }
                 // 以当前位置预备锚点/刻度数据(是否显示由 lensOpen 决定)
+                // 主轴悬停即对齐整分: 显示时间=点击 begin=缩略图请求时刻一致;
+                // 镜体以整分锚点为中心放大, 镜内点击仍为秒级
                 ts = Math.floor(this.axisTsByEvent({ clientX: pos.clientX }))
                 if (!isFinite(ts)) {
                     return
                 }
+                ts = this.snapAxisTs(ts)
                 this.lensAnchor = { ts: ts, px: px }
                 const left = Math.min(Math.max(px - LENS_W / 2, 0),
                     Math.max(0, barW - LENS_W))
