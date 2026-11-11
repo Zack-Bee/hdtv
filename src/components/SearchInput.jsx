@@ -254,6 +254,7 @@ class SearchInput extends React.Component {
         this.handleFocus = this.handleFocus.bind(this)
         this.handleKey = this.handleKey.bind(this)
         this.closePanel = this.closePanel.bind(this)
+        this.handleGlobalKey = this.handleGlobalKey.bind(this)
         this.doSearch = this.doSearch.bind(this)
         this.programTarget = this.programTarget.bind(this)
         this.setInputRef = this.setInputRef.bind(this)
@@ -338,11 +339,38 @@ class SearchInput extends React.Component {
         }
     }
 
+    // 全局快捷键: 光标不在任何输入框时敲 "/" 自动聚焦搜索框并吞掉该字符,
+    // 用户接着直接输入关键字(同 GitHub/YouTube 惯例)。
+    // 输入框内正常输入 "/"; 移动端搜索框隐藏(xs: display none)时忽略
+    handleGlobalKey(event) {
+        if (event.key !== "/" || event.ctrlKey || event.metaKey ||
+            event.altKey || event.isComposing) {
+            return
+        }
+        const el = document.activeElement
+        const tag = el && el.tagName ? el.tagName.toLowerCase() : ""
+        if (tag === "input" || tag === "textarea" || tag === "select" ||
+            (el && el.isContentEditable)) {
+            return
+        }
+        // 搜索框当前不可见(隐藏元素聚焦无效)时不处理
+        if (!this.inputRef || !this.inputRef.getClientRects().length) {
+            return
+        }
+        event.preventDefault()
+        this.inputRef.focus()
+    }
+
     closePanel() {
         this.setState({ open: false })
     }
 
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleGlobalKey)
+    }
+
     componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleGlobalKey)
         this.alive = false
         if (this.debounceTimer) {
             clearTimeout(this.debounceTimer)
