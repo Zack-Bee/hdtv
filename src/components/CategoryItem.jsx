@@ -17,6 +17,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite'
 import HdIcon from "@material-ui/icons/Hd"
 import MyLocationIcon from "@material-ui/icons/MyLocation"
 import DefaultIcon from "@material-ui/icons/LiveTv"
+import { FourKIcon, MovieIcon } from "./ChannelIcons.jsx"
 import { withStyles } from '@material-ui/core/styles'
 import blue from "@material-ui/core/colors/blue"
 import config from "../../config/config"
@@ -72,7 +73,24 @@ class CategoryItem extends React.Component {
             "高清频道": <HdIcon classes={this.props.isActive ? {
                 root: this.props.classes.icon
             } : {}} />,
+            "4K频道": <FourKIcon classes={this.props.isActive ? {
+                root: this.props.classes.icon
+            } : {}} />,
+            "影视频道": <MovieIcon classes={this.props.isActive ? {
+                root: this.props.classes.icon
+            } : {}} />,
             default: <DefaultIcon classes={this.props.isActive ? {
+                root: this.props.classes.icon
+            } : {}} />
+        }
+        // 未登记的新分类按名称模糊匹配兜底
+        let categoryIcon = categoryIcons[this.props.name]
+        if (!categoryIcon && /4k/i.test(this.props.name)) {
+            categoryIcon = <FourKIcon classes={this.props.isActive ? {
+                root: this.props.classes.icon
+            } : {}} />
+        } else if (!categoryIcon && /影视|电影/.test(this.props.name)) {
+            categoryIcon = <MovieIcon classes={this.props.isActive ? {
                 root: this.props.classes.icon
             } : {}} />
         }
@@ -82,7 +100,7 @@ class CategoryItem extends React.Component {
                     // this.props.onClick(this.props.name)
                 }}>
                     <ListItemIcon>
-                        {categoryIcons[this.props.name] || 
+                        {categoryIcon ||
                             categoryIcons["default"]}
                     </ListItemIcon>
                     <ListItemText primary={this.props.name}

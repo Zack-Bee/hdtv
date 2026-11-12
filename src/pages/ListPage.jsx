@@ -180,8 +180,7 @@ class MiniDrawer extends React.Component {
                         </Typography>
                         <div className={classes.flexAuto}></div>
                         <SearchInput className={classes.input}
-                            channelList={this.state.currentChannelList}
-                            setFilter={this.setFilter} />
+                            channelList={this.getAllChannels()} />
                         <div className={classes.showPictureButtonMargin}>
                             <IconButton onClick={() => {
                                 this.setIsHidePicture(!this.state.isHidePicture)
@@ -249,7 +248,7 @@ class MiniDrawer extends React.Component {
                         <ChannelList isHidePicture={this.state.isHidePicture}
                             channelList={this.state.currentChannelList}
                             cacheNum={this.state.timestamp}
-                            filter={this.state.filter} 
+                            prevCacheNum={this.state.prevTimestamp}
                         />
                         {/* <AutoRotatingCarousel open={this.state.isCarouselOpen}
                             label="现在就开始直播" onClose={this.closeCarousel}
@@ -278,82 +277,24 @@ class MiniDrawer extends React.Component {
                         <Grid container alignContent="space-around">
                             <Grid item xs={12} sm={6} >
                                 <Typography variant="headline" paragraph color="inherit">
-                                    友情链接
+                                    联系我们
                                 </Typography>
-                                <a href="http://tv.byr.cn/">
+                                <a href="http://xwb.neu.edu.cn/">
                                     <Typography variant="subheading" color="inherit">
-                                        北邮人IPTV直播
+                                        信网办
                                     </Typography>
                                 </a>
-                                <a href="http://video.dlut.edu.cn/">
+                                <a href="https://github.com/Zack-Bee/hdtv">
                                     <Typography variant="subheading" color="inherit">
-                                        大工媒体服务
-                                    </Typography>
-                                </a>
-                                <a href="http://tv.jlu6.edu.cn/">
-                                    <Typography variant="subheading" color="inherit">
-                                        吉大电视直播
-                                    </Typography>
-                                </a>
-                                <a href="http://dh.sau.edu.cn/">
-                                    <Typography variant="subheading" color="inherit">
-                                        沈航媒体服务
-                                    </Typography>
-                                </a>
-                                <a href="http://tv6.ustc.edu.cn/">
-                                    <Typography variant="subheading" color="inherit">
-                                        中国科大电视直播
-                                    </Typography>
-                                </a>
-                                <a href="http://hdtv.lzu6.edu.cn/">
-                                    <Typography variant="subheading" color="inherit">
-                                        兰州大学高清电视
-                                    </Typography>
-                                </a>
-                                <a href="http://itv.ahau.edu.cn">
-                                    <Typography variant="subheading" color="inherit">
-                                        安徽农大网络电视
-                                    </Typography>
-                                </a>
-                                <a href="http://iptv.neusoft.edu.cn">
-                                    <Typography variant="subheading" color="inherit">
-                                        大连东软信息技术学院IPv6网络电视
-                                    </Typography>
-                                </a>
-                                <a href="http://iptv.tsinghua.edu.cn/">
-                                    <Typography variant="subheading" paragraph color="inherit">
-                                        清华大学IPTV
+                                        Github
                                     </Typography>
                                 </a>
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography variant="headline" paragraph color="inherit">
-                                    联系我们
+                                    其他链接
                                 </Typography>
-                                <Typography variant="subheading" color="inherit">
-                                    东北大学网络中心
-                                </Typography>
-                                <a href="https://github.com/Zack-Bee/hdtv">
-                                    <Typography variant="subheading" paragraph color="inherit">
-                                        Github
-                                    </Typography>
-                                </a>
-                                <a href="https://hdtv.neu6.edu.cn/thx">
-                                    <Typography variant="headline" paragraph color="inherit">
-                                        鸣谢
-                                </Typography>
-                                </a>
-                                <a href="https://hdtv.neu6.edu.cn/faq">
-                                    <Typography variant="headline" paragraph color="inherit">
-                                        FAQ
-                                </Typography>
-                                </a>
-                                <a href="https://hdtv.neu6.edu.cn/index.html">
-                                    <Typography variant="subheading" color="inherit">
-                                        旧版HDTV
-                                </Typography>
-                                </a>
-                                <a href="https://hdtv.neu6.edu.cn/soft/neutv.apk">
+                                <a href="https://hdtv.neu6.edu.cn/soft/neu_diyp.apk">
                                     <Typography variant="subheading" color="inherit">
                                         安卓客户端
                                 </Typography>
@@ -395,14 +336,14 @@ class MiniDrawer extends React.Component {
             currentChannelList: [],
             categoryList: [],
             timestamp: Date.now(),
-            filter: "",
+            // 上一次的 cacheNum: 缩略图双重背景垫底层, 新图加载完成前旧图不消失, 避免整页闪动
+            prevTimestamp: 0,
             isCarouselOpen
         }
         this.closeDrawer = this.closeDrawer.bind(this)
         this.openDrawer = this.openDrawer.bind(this)
         this.setCategory = this.setCategory.bind(this)
         this.setIsHidePicture = this.setIsHidePicture.bind(this)
-        this.setFilter = this.setFilter.bind(this)
         this.freshTitle = this.freshTitle.bind(this)
         this.freshDetail = this.freshDetail.bind(this)
         this.closeCarousel = this.closeCarousel.bind(this)
@@ -411,29 +352,32 @@ class MiniDrawer extends React.Component {
     }
 
     componentDidMount() {
-        fetch(config.channels).then((res) => {
-            res.json().then((channels) => {
-                this.freshFavoriteListInfo(channels)
-                this.setState({
-                    categoryList: channels
-                }, () => {
-                    this.freshDetail()
-                    this.getVideoMap(channels).then(this.freshTitle)
-                })
+        // 记住当前分类: 播放页左上角返回按钮回到进入播放页前的分类
+        localStorage.setItem("lastCategory", this.props.category)
 
-                this.applySelectCategory()
+        fetch(config.channels).then((res) => {
+            return res.json()
+        }).then((channels) => {
+            this.freshFavoriteListInfo(channels)
+            this.setState({
+                categoryList: channels
+            }, () => {
+                this.freshDetail()
+                this.getVideoMap(channels).then(this.freshTitle)
             })
+
+            this.applySelectCategory()
+        }).catch(() => {
+            // 频道列表拉取失败: 页面骨架保留, 避免未处理 rejection
         })
 
-        // 周期性更新信息
+        // 周期性更新信息 (缩略图/人数/标题, 每分钟刷新一次)
         this.timer = setInterval(() => {
             // console.log("change")
-            this.setState({
-                timestamp: Date.now()
-            })
+            this.bumpCache()
             this.freshDetail()
             this.getVideoMap(this.state.categoryList).then(this.freshTitle)
-        }, 1000 * 120)
+        }, 1000 * 60)
     }
 
     componentDidUpdate(prevProps) {
@@ -441,6 +385,8 @@ class MiniDrawer extends React.Component {
             return
         }
 
+        // 分类切换时同样更新记忆, 返回按钮跟随最新分类
+        localStorage.setItem("lastCategory", this.props.category)
         this.applySelectCategory()
     }
 
@@ -450,7 +396,6 @@ class MiniDrawer extends React.Component {
 
     // 跳转到校内直播
     gotoLive() {
-        console.log(this.props.history)
         this.closeCarousel()
         this.props.history.push(`/${config.version}/list/channel/校内直播`)
     }
@@ -483,39 +428,57 @@ class MiniDrawer extends React.Component {
         this.setState({ isHidePicture })
     }
 
-    // 设置筛选节目的filter
-    setFilter(filter) {
-        this.setState({ filter })
+    // 搜索面板用的全量频道列表("所有频道"分类), 频道名匹配在面板内本地完成
+    getAllChannels() {
+        for (let i = 0, list = this.state.categoryList, len = list.length;
+            i < len; i++) {
+            if (list[i].name === "所有频道") {
+                return list[i].channelList
+            }
+        }
+        return this.state.currentChannelList
+    }
+
+    // 换缩略图缓存参数: 旧值挪给 prevTimestamp 作垫底背景, 新值拉取新图
+    bumpCache() {
+        this.setState((s) => ({
+            prevTimestamp: s.timestamp,
+            timestamp: Date.now()
+        }))
     }
 
     // 获取节目观看人数等详细信息
     freshDetail() {
         let channels = this.state.categoryList
         fetch(config.details).then((res) => {
-            res.json().then((details) => {
-                let detailsMap = {}
+            return res.json()
+        }).then((details) => {
+            let detailsMap = {}
 
-                // 使用map存储, 将查找修改的复杂度从O(n^2)降低到O(n)
-                for (let i of details) {
-                    detailsMap[i.channelId] = i
+            // 使用map存储, 将查找修改的复杂度从O(n^2)降低到O(n)
+            for (let i of details) {
+                detailsMap[i.channelId] = i
+            }
+            for (let i = 0, len1 = channels.length;
+                i < len1; i++) {
+                for (let j = 0, list = channels[i].channelList,
+                    len2 = list.length; j < len2; j++) {
+                    // details 双字段: viewerNum 实时在线, catchupNum 回看人数
+                    const d = detailsMap[list[j].channelId] || {}
+                    list[j].viewerNum = d.viewerNum
+                    list[j].catchupNum = d.catchupNum
                 }
-                for (let i = 0, len1 = channels.length;
-                    i < len1; i++) {
-                    for (let j = 0, list = channels[i].channelList,
-                        len2 = list.length; j < len2; j++) {
-                        list[j].viewerNum = detailsMap[list[j].channelId].viewerNum
-                    }
-                }
+            }
 
-                this.setState({
-                    categoryList: channels
-                })
+            this.setState({
+                categoryList: channels
             })
+        }).catch(() => {
+            // 人数接口失败: 保留上一轮数据, 等下一分钟周期重试
         })
 
-        this.setState({
-            timestamp: Date.now()
-        })
+        // 注意: 这里不能再 bumpCache——定时器已显式调用, 若在此重复调用,
+        // 每周期会连续生成两个几乎同时的 ts, 每张缩略图短时间请求 2 次
     }
 
     // 根据节目单刷新标题
@@ -586,9 +549,11 @@ class MiniDrawer extends React.Component {
                 currentDate = new Date().getDate(),
                 videoMap = sessionStorage.getItem("videoMap")
 
-            // 如果节目单信息过期, 则发送请求更新节目单
+            // 如果节目单信息过期(超过 40 分钟)或跨天, 则发送请求更新节目单
+            // 注意比较方向: Date.now() - saveTime 才是已缓存时长(原写法恒为假,
+            // 缓存永不按 40 分钟失效, 同一天内节目标题一直用旧数据)
             if (!storeSaveTime || !videoMap ||
-                (saveTime - Date.now() > 40 * 60 * 1000) ||
+                (Date.now() - saveTime > 40 * 60 * 1000) ||
                 currentDate !== saveDate) {
                 for (let i = 0, list = channels, len = list.length;
                     i < len; i++) {
@@ -614,6 +579,10 @@ class MiniDrawer extends React.Component {
                             sessionStorage.setItem("videoMap",
                                 JSON.stringify(allVideo))
                             resolve(allVideo)
+                        }).catch(() => {
+                            // 任一频道节目单拉取失败: 本轮以空 map 收场,
+                            // 不写缓存, 下个刷新周期整体重试
+                            resolve({})
                         })
                     }
                 }

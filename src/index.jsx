@@ -1,3 +1,13 @@
+// polyfill: 兼容不支持新 API 的浏览器 (IE11 / 旧 Safari 等)
+// 需在最前面引入, 顺序不能变
+import "core-js/es/promise"
+import "core-js/es/object/assign"
+import "core-js/es/array/includes"
+import "core-js/es/array/find"
+import "core-js/es/array/find-index"
+import "core-js/es/string/includes"
+import "whatwg-fetch"
+
 import React from 'react'
 import ReactDOM from "react-dom"
 import {
@@ -113,7 +123,21 @@ const App = () => (
                 if (!page.startsWith("player") && !page.startsWith("list")) {
                     return (
                         <Redirect to={`/${config.version}/list/channel/热门频道`}
-                        /> 
+                        />
+                    )
+                }
+                // 只有完整有效结构才放行: list/channel/<分类> 或 player/<频道>[/<时间>]
+                // 结构残缺(/v2/list、/v2/list/channel、/v2/player)或伪前缀(/v2/playerxyz)
+                // 时上面 startsWith 放行但两个内容 Route 都匹配不上, 会渲染空白页,
+                // 这里按段校验, 不完整一律重定向热门频道
+                const seg = page.split("/")
+                const isList = seg[0] === "list" && seg[1] === "channel" &&
+                    seg.length === 3 && seg[2] !== ""
+                const isPlayer = seg[0] === "player" && seg.length >= 2 && seg[1] !== ""
+                if (!isList && !isPlayer) {
+                    return (
+                        <Redirect to={`/${config.version}/list/channel/热门频道`}
+                        />
                     )
                 }
 

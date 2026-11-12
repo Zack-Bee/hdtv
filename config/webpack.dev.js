@@ -7,7 +7,7 @@ const config = merge(common, {
     output: {
         filename: "[name].js",
         path: path.resolve(__dirname, "../dist"),
-        publicPath: "/v1/"
+        publicPath: "/v2/"
     },
     devtool: "inline-source-map",
     devServer: {
@@ -32,10 +32,10 @@ const config = merge(common, {
         host: "127.0.0.1",
         open: true,
         historyApiFallback: {
-            index: "/v1/index.html"
+            index: "/v2/index.html"
         },
-        publicPath: "/v1/",
-        openPage: "v1/"
+        publicPath: "/v2/",
+        openPage: "v2/"
     }
 })
 

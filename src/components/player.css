@@ -1,0 +1,475 @@
+/* 原生 video 播放器控制条样式 (方案B: hls.js + 原生video) */
+
+.hdtv-player {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+}
+
+.hdtv-player:fullscreen,
+.hdtv-player:-webkit-full-screen {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.hdtv-player.hp-hidden {
+    cursor: none;
+}
+
+/* 比例控制用的视频容器 */
+.hp-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hp-video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #000;
+    outline: none;
+}
+
+/* 移动端标题栏 */
+.hp-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 15px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 10;
+}
+
+/* 底部控制条 */
+.hp-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px 12px 4px;
+    box-sizing: border-box;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0));
+    transition: opacity 0.3s;
+    z-index: 20;
+}
+
+.hdtv-player.hp-hidden .hp-controls,
+.hdtv-player.hp-hidden .hp-title {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 进度条 */
+.hp-progress {
+    position: relative;
+    height: 14px;
+    cursor: pointer;
+    touch-action: none;
+}
+
+/* 扩大触屏拖动热区(视觉不变) */
+.hp-progress::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    bottom: -14px;
+}
+
+.hp-progress-inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 5px;
+    margin-top: -2.5px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 直播/时移轴右端的直播边缘红点 */
+.hp-live-edge {
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin-top: -5px;
+    border-radius: 5px;
+    background: #f44336;
+}
+
+.hp-buffered {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.hp-played {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #2196f3;
+}
+
+/* 进度条触摸拖动归播放器自己处理: 禁止浏览器把它当滚动/刷新手势
+   (配合原生非 passive 监听, 真机上拖动预览不被系统手势打断) */
+.hp-progress {
+    touch-action: none;
+}
+
+/* 进度条缩略图预览 */
+.hp-thumb {
+    position: absolute;
+    bottom: 22px;
+    transform: translateX(-50%);
+    width: 160px;
+    pointer-events: none;
+    z-index: 25;
+}
+
+.hp-thumb-img {
+    width: 160px;
+    height: 90px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #333;
+    box-sizing: border-box;
+}
+
+.hp-thumb-time {
+    margin-top: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 12px;
+    text-shadow: 1px 1px #000;
+}
+
+/* 时移轴悬停放大镜: 缩略图区保持图片原宽(160), 左右各扩 80px 透明热区
+   (background-clip: content-box 让深色底只铺在图片/时间区, 右侧不再发黑),
+   整体命中宽度仍为 320 与刻度尺一致, 镜内侧移不丢失目标 */
+.hp-thumb.hp-lens {
+    box-sizing: content-box;
+    width: 160px;
+    padding: 0 80px;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.78);
+    background-clip: content-box;
+    -webkit-background-clip: content-box;
+    border-radius: 4px;
+    /* 高于 hp-hint(26): 镜体激活期间浮在静音提示之上,
+       否则提示层截获命中会令光标脱离轴命中区触发 mouseleave 拆镜 */
+    z-index: 30;
+}
+
+/* 填补气泡与轴之间约 8px 空隙: 光标从轴连续移入镜体途中不脱离
+   轴命中区(否则 mouseleave 拆镜, 慢速移动永远进不了镜体) */
+.hp-thumb.hp-lens::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -12px;
+    height: 12px;
+}
+
+/* 放大镜刻度尺: 锚点±150秒(5分钟)拉伸, 每10秒一刻度,
+   时间标注镜内均布5个(间隔75秒, 贴轴端钳制时也恰好5个);
+   独立加宽为 320 并向两侧溢出 80px, 与镜体命中区对齐 */
+.hp-lens-ruler {
+    position: relative;
+    box-sizing: border-box;
+    width: 320px;
+    height: 32px;
+    margin: 6px 0 0 -80px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.78);
+    border-radius: 0 0 4px 4px;
+}
+
+.hp-lens-tick {
+    position: absolute;
+    bottom: 0;
+    width: 1px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.hp-lens-major {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.hp-lens-label {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 1px 1px #000;
+}
+
+/* 当前精确悬停位置指示线 */
+.hp-lens-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: #40c4ff;
+}
+
+/* 按钮行 */
+.hp-buttons {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    padding-top: 2px;
+}
+
+.hp-time {
+    font-size: 13px;
+    margin: 0 8px;
+    opacity: 0.9;
+    white-space: nowrap;
+    font-family: sans-serif;
+}
+
+.hp-spacer {
+    flex: 1 1 auto;
+}
+
+.hp-live {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 13px;
+    margin: 0 8px;
+}
+
+.hp-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f44336;
+    margin-right: 6px;
+}
+
+/* 直播/时移徽标后的时间: 直播=当前时间, 时移=当前播放的内容时刻 */
+.hp-live-clock {
+    margin-left: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    font-family: sans-serif;
+}
+
+/* 时移页"回到直播"按钮 */
+.hp-backlive {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 3px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    padding: 5px 8px;
+    margin: 0 4px;
+    cursor: pointer;
+}
+
+.hp-backlive:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* 回看倍速: 按钮 + 弹出选档面板(仅回看模式渲染) */
+.hp-speed {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.hp-speed-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    opacity: 0.9;
+    font-size: 13px;
+    line-height: 1;
+    padding: 6px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.hp-speed-btn:hover {
+    opacity: 1;
+}
+
+.hp-speed-pop {
+    position: absolute;
+    right: 0;
+    bottom: 40px;
+    min-width: 92px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 30;
+}
+
+.hp-speed-item {
+    padding: 7px 16px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #212121;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.hp-speed-item:last-child {
+    border-bottom: none;
+}
+
+.hp-speed-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.hp-speed-item.on {
+    color: #2196f3;
+    background: #e3f2fd;
+    font-weight: 500;
+}
+
+/* 音量条 */
+.hp-volume {
+    width: 70px;
+    height: 14px;
+    position: relative;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.hp-volume-inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 5px;
+    margin-top: -2.5px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.hp-volume-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+}
+
+/* 中央覆盖层: 大播放键 / 加载中 / 错误 */
+.hp-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 22;
+}
+
+.hp-bigplay {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(33, 33, 33, 0.6);
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    padding: 0;
+}
+
+.hp-bigplay svg {
+    fill: #fff;
+}
+
+.hp-spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #2196f3;
+    -webkit-animation: hp-rotate 1s linear infinite;
+    animation: hp-rotate 1s linear infinite;
+}
+
+@-webkit-keyframes hp-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes hp-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.hp-error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-align: center;
+    z-index: 30;
+}
+
+.hp-error-text {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.hp-error-btn {
+    color: #fff !important;
+}
+
+/* 自动静音提示 */
+.hp-hint {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    /* 必须低于 .hp-controls(20): 控件条是独立堆叠上下文, hint 若高于 20,
+       会压住其中 z-index 更大的放大镜镜体并截获命中, 光标移入镜体即拆镜 */
+    z-index: 15;
+}
