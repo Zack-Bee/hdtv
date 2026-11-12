@@ -161,6 +161,7 @@ class PlayerPage extends React.Component {
                 <MuiThemeProvider theme={theme}>
                     <Player path={this.state.currentSourcePath}
                         title={this.state.title}
+                        programName={this.currentProgramName()}
                         thumbnails={this.state.currentSourceThumbnails}
                         channel={this.state.channel}
                         timeline={this.state.timeline}

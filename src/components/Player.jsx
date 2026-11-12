@@ -218,9 +218,9 @@ class Player extends React.Component {
                         />
                     </div>
 
-                    {/* 移动端标题, 对应原 flowplayer 的 clip.title */}
-                    {!isPc && s.controlsVisible && this.props.title
-                        ? <div className="hp-title">{this.props.title}</div>
+                    {/* 移动端标题: 优先显示当前正在直播的节目名, 无节目单时回退频道名 */}
+                    {!isPc && s.controlsVisible && (this.props.programName || this.props.title)
+                        ? <div className="hp-title">{this.props.programName || this.props.title}</div>
                         : null}
 
                     {s.loading && !s.error && !this.props.sourceError ? (
